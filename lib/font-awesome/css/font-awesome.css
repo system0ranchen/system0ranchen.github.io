@@ -2335,11 +2335,3 @@
   overflow: visible;
   clip: auto;
 }
-body{
-    background:url(/images/bg.jpg);
-    background-size:cover;
-    background-repeat:no-repeat;
-    background-attachment:fixed;
-    background-position:center;
-    opacity: 0.8;
-}
