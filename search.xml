@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>闪灵cms重装漏洞复现</title>
+      <link href="/2020/03/27/one/"/>
+      <url>/2020/03/27/one/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><p>Cms重装漏洞简介：一般cms都有一个install的文件用于安装cms的包括数据库信息，网站信息等但是如果没有对install这个文件做安全的校验就会出现，重装漏洞，即覆盖掉原网站。这里用闪灵cms做简单说明</p><div>    首先，定位到install文件的位置</br><a href="https://sm.ms/image/NCIGpugAaect7nO" target="_blank"><img src="https://i.loli.net/2020/03/27/NCIGpugAaect7nO.png" /></a>   <p> 简单解释下，第1-15行的意思，就是get接受两个参数。如果action参数的值为savepath就会返回一个后台信息和账号密码的文本，并且停止到脚本</br>向下走16行-20行就是 分割路径然后请求/data/config.json文件并且返回其中的id值，然后在去请求官网的api接口    </p>    继续向下走：</br><a href="https://sm.ms/image/w8OT9M4ubE6KSR5" target="_blank"><img src="https://i.loli.net/2020/03/27/w8OT9M4ubE6KSR5.png" /></a></br>    判断step的值 如果不是4 并且step为，就会跳转回首页</br><p><a href="https://sm.ms/image/fA3p4r9QZlkuOG7" target="_blank"><img src="https://i.loli.net/2020/03/27/fA3p4r9QZlkuOG7.png" /></a><br>    判断step的值 如果为1或者空则进入到安装页面。<br></br><br><a href="https://sm.ms/image/m1dynSiusqpIzJV" target="_blank"><img src="https://i.loli.net/2020/03/27/m1dynSiusqpIzJV.png" /></a><br>也是判断step的值为2时候进入此页面，（3 和 4 步骤同，就不贴了）</br></p><p>至此，我们可以看到他的整体一个流程，首先get类型接收step和action的值如果action=savepath 就会停止脚本的运行，如果step为空 或者0 就会跳转回首页所以我们可以直接step=1 action=null，直接绕过限制 ，从而造成重装漏洞 </p><p><a href="https://sm.ms/image/zsv2mliyXNaIBJp" target="_blank"><img src="https://i.loli.net/2020/03/27/zsv2mliyXNaIBJp.png" /></a></p></div>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 代码审计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
