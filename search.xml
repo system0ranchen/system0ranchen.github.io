@@ -1,6 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>phpyun 后台getshell</title>
+    <url>/blog/2020/04/02/two/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+<p>
+漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>
+漏洞版本号： V4.5 Beta</br>
+漏洞危害：高危</br>
+漏洞官网：https://www.phpyun.com/</br>
+</p>
+<div>
+    <p>Poyload:
+                Url：<br>
+        http://www.cc.com/admin/index.php?m=database&c=backup
+        <br>
+        Post：
+        pytoken=3c3140b58f5e&table[]=]=1;phpinfo();//&maxfilesize=1111<br>
+    </p>
+    复现过程：</br>
+    漏洞复现过程：<br>
+首先进入后台-》点击工具-》数据-》数据库管理-》自定义备份-》随便选择一个表-》提交备份<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJHfET.png" alt="GJHfET.png" border="0" /><br>
+抓包，修改table[] 参数-》发送<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJqEO1.png" alt="GJqEO1.png" border="0" /><br>
+<img src="https://s1.ax1x.com/2020/04/02/GJqtTf.png" alt="GJqtTf.png" border="0" /><br>
+产生的文件就在uploads/data/plus/bdata/phpyun_20200312153927/config.php
+Url：访问（这里搭建的时候环境，我默认指向了uploads）<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJq600.png" alt="GJq600.png" border="0" /><br>
+查看文件config.php<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJq5c9.png" alt="GJq5c9.png" border="0" /><br>
+漏洞审计原因：<br>
+漏洞产生文件：\phpyun\uploads\admin\model\database.class.php<br>
+第50行 ：'tablename'=>$_POST['table'] 直接接受了我们post请求发送的参数值<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLiAf.png" alt="GJLiAf.png" border="0" /><br>
+然后56行调用了，BackupDatabaseInit() 方法，追踪该函数，<br>
+在\phpyun\uploads\app\include\dbbackup\class\functions.php，找到了该函数的定义<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLnun.png" alt="GJLnun.png" border="0" /><br>
+产生漏洞的原因在<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLJgJ.png" alt="GJLJgJ.png" border="0" /><br>
+这里他接收了传入的值并且没有任何过滤就写入了并且是写入的php文件，追踪$d_table 的传入来源
+可以看到是通过$tablename[$i]拼接 的到的$d_table 的值 追踪$tablename<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLrCD.png" alt="GJLrCD.png" border="0" /><br>
+可以看到是通过函数形参传入的$add的tablename 然后赋值的来的<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLRbt.png" alt="GJLRbt.png" border="0" /><br>
+在回到\phpyun\uploads\admin\model\database.class.php看，发现tablename 是我们可以控制的，所以传入特定的php代码即可执行<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLXV0.png" alt="GJLXV0.png" border="0" /><br>
+漏洞修复：<br>
+在每次写入config.php文件的时候，在他目录下创建.htaccess文件禁止解析php文件<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJOlqI.png" alt="GJOlqI.png" border="0" />
+</div>]]></content>
+      <tags>
+        <tag>代码审计</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>闪灵cms重装漏洞复现</title>
     <url>/blog/2020/03/27/one/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>

@@ -20,17 +20,33 @@
     var CONFIG = {"hostname":"system0ranchen.gitee.io","root":"/blog/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一个普通且无名的信息安全爱好者">
-<meta property="og:type" content="website">
-<meta property="og:title" content="system0ranchen">
-<meta property="og:url" content="https://system0ranchen.gitee.io/archives/index.html">
+  <meta name="description" content="PHPYUN cms后台getshell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpyun 后台getshell">
+<meta property="og:url" content="https://system0ranchen.gitee.io/2020/04/02/two/index.html">
 <meta property="og:site_name" content="system0ranchen">
-<meta property="og:description" content="一个普通且无名的信息安全爱好者">
+<meta property="og:description" content="PHPYUN cms后台getshell">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJHfET.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJqEO1.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJqtTf.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJq600.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJq5c9.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJLiAf.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJLnun.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJLJgJ.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJLrCD.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJLRbt.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJLXV0.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/02/GJOlqI.png">
+<meta property="article:published_time" content="2020-04-02T08:57:11.000Z">
+<meta property="article:modified_time" content="2020-04-02T09:15:40.288Z">
 <meta property="article:author" content="染尘">
+<meta property="article:tag" content="代码审计">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/04/02/GJHfET.png">
 
-<link rel="canonical" href="https://system0ranchen.gitee.io/archives/">
+<link rel="canonical" href="https://system0ranchen.gitee.io/2020/04/02/two/">
 
 
 <script id="page-configurations">
@@ -38,12 +54,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | system0ranchen</title>
+  <title>phpyun 后台getshell | system0ranchen</title>
   
 
 
@@ -171,72 +187,130 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 2 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://system0ranchen.gitee.io/2020/04/02/two/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s1.ax1x.com/2020/03/27/GCO4Rx.th.jpg">
+      <meta itemprop="name" content="染尘">
+      <meta itemprop="description" content="一个普通且无名的信息安全爱好者">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="system0ranchen">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          phpyun 后台getshell
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-02 16:57:11 / 修改时间：17:15:40" itemprop="dateCreated datePublished" datetime="2020-04-02T16:57:11+08:00">2020-04-02</time>
+            </span>
+
+          
+            <div class="post-description">PHPYUN cms后台getshell</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+<p>
+漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>
+漏洞版本号： V4.5 Beta</br>
+漏洞危害：高危</br>
+漏洞官网：https://www.phpyun.com/</br>
+</p>
+<div>
+    <p>Poyload:
+                Url：<br>
+        http://www.cc.com/admin/index.php?m=database&c=backup
+        <br>
+        Post：
+        pytoken=3c3140b58f5e&table[]=]=1;phpinfo();//&maxfilesize=1111<br>
+    </p>
+    复现过程：</br>
+    漏洞复现过程：<br>
+首先进入后台-》点击工具-》数据-》数据库管理-》自定义备份-》随便选择一个表-》提交备份<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJHfET.png" alt="GJHfET.png" border="0" /><br>
+抓包，修改table[] 参数-》发送<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJqEO1.png" alt="GJqEO1.png" border="0" /><br>
+<img src="https://s1.ax1x.com/2020/04/02/GJqtTf.png" alt="GJqtTf.png" border="0" /><br>
+产生的文件就在uploads/data/plus/bdata/phpyun_20200312153927/config.php
+Url：访问（这里搭建的时候环境，我默认指向了uploads）<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJq600.png" alt="GJq600.png" border="0" /><br>
+查看文件config.php<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJq5c9.png" alt="GJq5c9.png" border="0" /><br>
+漏洞审计原因：<br>
+漏洞产生文件：\phpyun\uploads\admin\model\database.class.php<br>
+第50行 ：'tablename'=>$_POST['table'] 直接接受了我们post请求发送的参数值<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLiAf.png" alt="GJLiAf.png" border="0" /><br>
+然后56行调用了，BackupDatabaseInit() 方法，追踪该函数，<br>
+在\phpyun\uploads\app\include\dbbackup\class\functions.php，找到了该函数的定义<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLnun.png" alt="GJLnun.png" border="0" /><br>
+产生漏洞的原因在<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLJgJ.png" alt="GJLJgJ.png" border="0" /><br>
+这里他接收了传入的值并且没有任何过滤就写入了并且是写入的php文件，追踪$d_table 的传入来源
+可以看到是通过$tablename[$i]拼接 的到的$d_table 的值 追踪$tablename<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLrCD.png" alt="GJLrCD.png" border="0" /><br>
+可以看到是通过函数形参传入的$add的tablename 然后赋值的来的<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLRbt.png" alt="GJLRbt.png" border="0" /><br>
+在回到\phpyun\uploads\admin\model\database.class.php看，发现tablename 是我们可以控制的，所以传入特定的php代码即可执行<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLXV0.png" alt="GJLXV0.png" border="0" /><br>
+漏洞修复：<br>
+在每次写入config.php文件的时候，在他目录下创建.htaccess文件禁止解析php文件<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJOlqI.png" alt="GJOlqI.png" border="0" />
+</div>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-02T16:57:11+08:00"
-              content="2020-04-02">
-          04-02
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag"># 代码审计</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/blog/2020/04/02/two/" itemprop="url">
-            <span itemprop="name">phpyun 后台getshell</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-27T12:21:37+08:00"
-              content="2020-03-27">
-          03-27
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/blog/2020/03/27/one/" itemprop="url">
-            <span itemprop="name">闪灵cms重装漏洞复现</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+        
 
 
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/03/27/one/" rel="prev" title="闪灵cms重装漏洞复现">
+      <i class="fa fa-chevron-left"></i> 闪灵cms重装漏洞复现
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
   </div>
-  
-  
-  
-
-  
-
 
 
           </div>
