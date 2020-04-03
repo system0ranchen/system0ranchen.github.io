@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>thinkphp6任意文件写入</title>
+    <url>/blog/2020/04/03/three/</url>
+    <content><![CDATA[<p>Thinkphp6:任意文件写入<br><br>版本：v6.0.0-v6.0.1<br><br>复现过程：<br><br>下载配置好tp6 然后 ，在\tp6\app\controller\Index.php&nbsp;中。写好，漏洞代码。<br><br><img src="https://s1.ax1x.com/2020/04/03/GawC8O.png" alt="GawC8O.png" border="0" /><br><br>然后再去，tp6\app\middleware.php中吧session 写入打开<br><br><img src="https://s1.ax1x.com/2020/04/03/GawmIP.png" alt="GawmIP.png" border="0" /><br><br>访问index 控制器,查看<br><br><img src="https://s1.ax1x.com/2020/04/03/Gaw8qs.png" alt="Gaw8qs.png" border="0" /><br><br>打开正常，传入a 参数并且抓包<br><br><img src="https://s1.ax1x.com/2020/04/03/GawUiV.png" alt="GawUiV.png" border="0" /><br><br>在a参数写入php代码。Phpsessid 写入一个文件名和路径总长度32位的内容。<br><br>发送<br><br><img src="https://s1.ax1x.com/2020/04/03/GawcIx.png" alt="GawcIx.png" border="0" /><br><br>成功写入<br><br>漏洞分析：<br><br>根据网上信息漏洞位置在:<br><br>tp6/vendor/topthink/framework/src/think/session/Store.php<br><br>所以我们直接定位到漏洞位置：<br><br><img src="https://s1.ax1x.com/2020/04/03/GawLJf.png" alt="GawLJf.png" border="0" /><br><br>判断phpsessid的值是否是字符串并且是否长度为32<br><br>向下走，找到session保存的位置：<br><br><img src="https://s1.ax1x.com/2020/04/03/Ga09wn.png" alt="Ga09wn.png" border="0" /><br></p>
+<p>关键代码就是 259-261，这里他判断session的值如果不为空就是进行序列化然后写入.其中也没有过滤。所以如果session 的值 我们能控制 （就比如图1那样），就会直接造成一个任意文件写入的漏洞。</p>
+（在src/think/middleware/SessionInit.php文件里有phpsessid的获取方法。这里就不追了，有兴趣的可以自己去查看）<br>
+]]></content>
+      <tags>
+        <tag>代码审计</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>phpyun 后台getshell</title>
     <url>/blog/2020/04/02/two/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
