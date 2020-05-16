@@ -1,64 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
-    <entry>
-      <title>thinkphp6任意文件写入</title>
-      <link href="/blog/2020/04/03/three/"/>
-      <url>/blog/2020/04/03/three/</url>
-      
-        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>Thinkphp6:任意文件写入<br>版本：v6.0.0-v6.0.1<br>复现过程：<br>下载配置好tp6 然后 ，在\tp6\app\controller\Index.php&nbsp;中。写好，漏洞代码。<br><img src="https://s1.ax1x.com/2020/04/03/GawC8O.png" alt="GawC8O.png" border="0" /><br>然后再去，tp6\app\middleware.php中吧session 写入打开<br><img src="https://s1.ax1x.com/2020/04/03/GawmIP.png" alt="GawmIP.png" border="0" /><br>访问index 控制器,查看<br><img src="https://s1.ax1x.com/2020/04/03/Gaw8qs.png" alt="Gaw8qs.png" border="0" /><br>打开正常，传入a 参数并且抓包<br><img src="https://s1.ax1x.com/2020/04/03/GawUiV.png" alt="GawUiV.png" border="0" /><br>在a参数写入php代码。Phpsessid 写入一个文件名和路径总长度32位的内容。<br>发送<br><img src="https://s1.ax1x.com/2020/04/03/GawcIx.png" alt="GawcIx.png" border="0" /><br>成功写入<br>漏洞分析：<br>根据网上信息漏洞位置在:<br>tp6/vendor/topthink/framework/src/think/session/Store.php<br>所以我们直接定位到漏洞位置：<br><img src="https://s1.ax1x.com/2020/04/03/GawLJf.png" alt="GawLJf.png" border="0" /><br>判断phpsessid的值是否是字符串并且是否长度为32<br>向下走，找到session保存的位置：<br><img src="https://s1.ax1x.com/2020/04/03/Ga09wn.png" alt="Ga09wn.png" border="0" /><br><p>关键代码就是 259-261，这里他判断session的值如果不为空就是进行序列化然后写入.其中也没有过滤。所以如果session 的值 我们能控制 （就比如图1那样），就会直接造成一个任意文件写入的漏洞。</p>（在src/think/middleware/SessionInit.php文件里有phpsessid的获取方法。这里就不追了，有兴趣的可以自己去查看）<br>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> 代码审计 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>phpyun 后台getshell</title>
-      <link href="/blog/2020/04/02/two/"/>
-      <url>/blog/2020/04/02/two/</url>
-      
-        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><p>漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>漏洞版本号： V4.5 Beta</br>漏洞官网：https://www.phpyun.com/</br></p><div>    <p>Poyload:                Url：<br>        http://www.cc.com/admin/index.php?m=database&c=backup        <br>        Post：        pytoken=3c3140b58f5e&table[]=]=1;phpinfo();//&maxfilesize=1111<br>    </p>    复现过程：</br>    漏洞复现过程：<br>首先进入后台-》点击工具-》数据-》数据库管理-》自定义备份-》随便选择一个表-》提交备份<br><img src="https://s1.ax1x.com/2020/04/02/GJHfET.png" alt="GJHfET.png" border="0" /><br>抓包，修改table[] 参数-》发送<br><img src="https://s1.ax1x.com/2020/04/02/GJqEO1.png" alt="GJqEO1.png" border="0" /><br><img src="https://s1.ax1x.com/2020/04/02/GJqtTf.png" alt="GJqtTf.png" border="0" /><br>产生的文件就在uploads/data/plus/bdata/phpyun_20200312153927/config.phpUrl：访问（这里搭建的时候环境，我默认指向了uploads）<br><img src="https://s1.ax1x.com/2020/04/02/GJq600.png" alt="GJq600.png" border="0" /><br>查看文件config.php<br><img src="https://s1.ax1x.com/2020/04/02/GJq5c9.png" alt="GJq5c9.png" border="0" /><br>漏洞审计原因：<br>漏洞产生文件：\phpyun\uploads\admin\model\database.class.php<br>第50行 ：'tablename'=>$_POST['table'] 直接接受了我们post请求发送的参数值<br><img src="https://s1.ax1x.com/2020/04/02/GJLiAf.png" alt="GJLiAf.png" border="0" /><br>然后56行调用了，BackupDatabaseInit() 方法，追踪该函数，<br>在\phpyun\uploads\app\include\dbbackup\class\functions.php，找到了该函数的定义<br><img src="https://s1.ax1x.com/2020/04/02/GJLnun.png" alt="GJLnun.png" border="0" /><br>产生漏洞的原因在<br><img src="https://s1.ax1x.com/2020/04/02/GJLJgJ.png" alt="GJLJgJ.png" border="0" /><br>这里他接收了传入的值并且没有任何过滤就写入了并且是写入的php文件，追踪$d_table 的传入来源可以看到是通过$tablename[$i]拼接 的到的$d_table 的值 追踪$tablename<br><img src="https://s1.ax1x.com/2020/04/02/GJLrCD.png" alt="GJLrCD.png" border="0" /><br>可以看到是通过函数形参传入的$add的tablename 然后赋值的来的<br><img src="https://s1.ax1x.com/2020/04/02/GJLRbt.png" alt="GJLRbt.png" border="0" /><br>在回到\phpyun\uploads\admin\model\database.class.php看，发现tablename 是我们可以控制的，所以传入特定的php代码即可执行<br><img src="https://s1.ax1x.com/2020/04/02/GJLXV0.png" alt="GJLXV0.png" border="0" /><br>漏洞修复：<br>在每次写入config.php文件的时候，在他目录下创建.htaccess文件禁止解析php文件<br><img src="https://s1.ax1x.com/2020/04/02/GJOlqI.png" alt="GJOlqI.png" border="0" /></div>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> 代码审计 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>闪灵cms重装漏洞复现</title>
-      <link href="/blog/2020/03/27/one/"/>
-      <url>/blog/2020/03/27/one/</url>
-      
-        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><p>Cms重装漏洞简介：一般cms都有一个install的文件用于安装cms的包括数据库信息，网站信息等但是如果没有对install这个文件做安全的校验就会出现，重装漏洞，即覆盖掉原网站。这里用闪灵cms做简单说明</p><div>    首先，定位到install文件的位置</br><a href="https://sm.ms/image/NCIGpugAaect7nO" target="_blank"><img src="https://i.loli.net/2020/03/27/NCIGpugAaect7nO.png" /></a>   <p> 简单解释下，第1-15行的意思，就是get接受两个参数。如果action参数的值为savepath就会返回一个后台信息和账号密码的文本，并且停止到脚本</br>向下走16行-20行就是 分割路径然后请求/data/config.json文件并且返回其中的id值，然后在去请求官网的api接口    </p>    继续向下走：</br><a href="https://sm.ms/image/w8OT9M4ubE6KSR5" target="_blank"><img src="https://i.loli.net/2020/03/27/w8OT9M4ubE6KSR5.png" /></a></br>    判断step的值 如果不是4 并且step为，就会跳转回首页</br><p><a href="https://sm.ms/image/fA3p4r9QZlkuOG7" target="_blank"><img src="https://i.loli.net/2020/03/27/fA3p4r9QZlkuOG7.png" /></a><br>    判断step的值 如果为1或者空则进入到安装页面。<br></br><br><a href="https://sm.ms/image/m1dynSiusqpIzJV" target="_blank"><img src="https://i.loli.net/2020/03/27/m1dynSiusqpIzJV.png" /></a><br>也是判断step的值为2时候进入此页面，（3 和 4 步骤同，就不贴了）</br></p><p>至此，我们可以看到他的整体一个流程，首先get类型接收step和action的值如果action=savepath 就会停止脚本的运行，如果step为空 或者0 就会跳转回首页所以我们可以直接step=1 action=null，直接绕过限制 ，从而造成重装漏洞 </p><p><a href="https://sm.ms/image/zsv2mliyXNaIBJp" target="_blank"><img src="https://i.loli.net/2020/03/27/zsv2mliyXNaIBJp.png" /></a></p></div>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> 代码审计 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-  
-  
+<search>
+  <entry>
+    <title>DM-cms后台getshell</title>
+    <url>/blog/2020/04/28/four/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>  
+
+
+<p><strong>漏洞触发点</strong></p>
+<p><code>http://www.xxx.cn/admindm-yourname/mod_module/mod_importdata.php?lang=cn</code><br><img src="https://i.loli.net/2020/05/16/xz4tlyAJq5QuBUo.jpg" alt="1.jpg"><br>我们先去模板管理—》模板管理<br><a href="http://www.cc.com/admindm-yourname/mod_style/mod_style.php?lang=cn" target="_blank" rel="noopener">http://www.cc.com/admindm-yourname/mod_style/mod_style.php?lang=cn</a><br><img src="https://i.loli.net/2020/05/16/xmhnpNXOM6Z8Yuj.jpg" alt="2.jpg"><br>点击修改css样式然后插入php代码，然后提交<br><img src="https://i.loli.net/2020/05/16/Cen2BTbdpP5Gh6v.jpg" alt="3.jpg"><br>复制这个路径然后回到，最初的漏洞触发点输入<br><img src="https://i.loli.net/2020/05/16/aTvGNQgXkFBL7o5.jpg" alt="5jpg.jpg"><br>../../DM-static/assets/cssjstpl/style20160721_0855323118.css（之前复制的css文件路径）<br><img src="https://i.loli.net/2020/05/16/6DuvkenH7mlF5cb.jpg" alt="6.jpg"><br>点击提交<br><img src="https://i.loli.net/2020/05/16/52YHhwBM4OkLf96.jpg" alt="11.jpg"></p>
+]]></content>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>thinkphp6任意文件写入</title>
+    <url>/blog/2020/04/03/three/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+Thinkphp6:任意文件写入<br>
+版本：v6.0.0-v6.0.1<br>
+复现过程：<br>
+下载配置好tp6 然后 ，在\tp6\app\controller\Index.php&nbsp;中。写好，漏洞代码。<br>
+<img src="https://s1.ax1x.com/2020/04/03/GawC8O.png" alt="GawC8O.png" border="0" /><br>
+然后再去，tp6\app\middleware.php中吧session 写入打开<br>
+<img src="https://s1.ax1x.com/2020/04/03/GawmIP.png" alt="GawmIP.png" border="0" /><br>
+访问index 控制器,查看<br>
+<img src="https://s1.ax1x.com/2020/04/03/Gaw8qs.png" alt="Gaw8qs.png" border="0" /><br>
+打开正常，传入a 参数并且抓包<br>
+<img src="https://s1.ax1x.com/2020/04/03/GawUiV.png" alt="GawUiV.png" border="0" /><br>
+在a参数写入php代码。Phpsessid 写入一个文件名和路径总长度32位的内容。<br>
+发送<br>
+<img src="https://s1.ax1x.com/2020/04/03/GawcIx.png" alt="GawcIx.png" border="0" /><br>
+成功写入<br>
+漏洞分析：<br>
+根据网上信息漏洞位置在:<br>
+tp6/vendor/topthink/framework/src/think/session/Store.php<br>
+所以我们直接定位到漏洞位置：<br>
+<img src="https://s1.ax1x.com/2020/04/03/GawLJf.png" alt="GawLJf.png" border="0" /><br>
+判断phpsessid的值是否是字符串并且是否长度为32<br>
+向下走，找到session保存的位置：<br>
+<img src="https://s1.ax1x.com/2020/04/03/Ga09wn.png" alt="Ga09wn.png" border="0" /><br>
+<p>关键代码就是 259-261，这里他判断session的值如果不为空就是进行序列化然后写入.其中也没有过滤。所以如果session 的值 我们能控制 （就比如图1那样），就会直接造成一个任意文件写入的漏洞。</p>
+（在src/think/middleware/SessionInit.php文件里有phpsessid的获取方法。这里就不追了，有兴趣的可以自己去查看）<br>
+]]></content>
+      <tags>
+        <tag>代码审计</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>phpyun 后台getshell</title>
+    <url>/blog/2020/04/02/two/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+<p>
+漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>
+漏洞版本号： V4.5 Beta</br>
+漏洞官网：https://www.phpyun.com/</br>
+</p>
+<div>
+    <p>Poyload:
+                Url：<br>
+        http://www.cc.com/admin/index.php?m=database&c=backup
+        <br>
+        Post：
+        pytoken=3c3140b58f5e&table[]=]=1;phpinfo();//&maxfilesize=1111<br>
+    </p>
+    复现过程：</br>
+    漏洞复现过程：<br>
+首先进入后台-》点击工具-》数据-》数据库管理-》自定义备份-》随便选择一个表-》提交备份<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJHfET.png" alt="GJHfET.png" border="0" /><br>
+抓包，修改table[] 参数-》发送<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJqEO1.png" alt="GJqEO1.png" border="0" /><br>
+<img src="https://s1.ax1x.com/2020/04/02/GJqtTf.png" alt="GJqtTf.png" border="0" /><br>
+产生的文件就在uploads/data/plus/bdata/phpyun_20200312153927/config.php
+Url：访问（这里搭建的时候环境，我默认指向了uploads）<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJq600.png" alt="GJq600.png" border="0" /><br>
+查看文件config.php<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJq5c9.png" alt="GJq5c9.png" border="0" /><br>
+漏洞审计原因：<br>
+漏洞产生文件：\phpyun\uploads\admin\model\database.class.php<br>
+第50行 ：'tablename'=>$_POST['table'] 直接接受了我们post请求发送的参数值<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLiAf.png" alt="GJLiAf.png" border="0" /><br>
+然后56行调用了，BackupDatabaseInit() 方法，追踪该函数，<br>
+在\phpyun\uploads\app\include\dbbackup\class\functions.php，找到了该函数的定义<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLnun.png" alt="GJLnun.png" border="0" /><br>
+产生漏洞的原因在<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLJgJ.png" alt="GJLJgJ.png" border="0" /><br>
+这里他接收了传入的值并且没有任何过滤就写入了并且是写入的php文件，追踪$d_table 的传入来源
+可以看到是通过$tablename[$i]拼接 的到的$d_table 的值 追踪$tablename<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLrCD.png" alt="GJLrCD.png" border="0" /><br>
+可以看到是通过函数形参传入的$add的tablename 然后赋值的来的<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLRbt.png" alt="GJLRbt.png" border="0" /><br>
+在回到\phpyun\uploads\admin\model\database.class.php看，发现tablename 是我们可以控制的，所以传入特定的php代码即可执行<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJLXV0.png" alt="GJLXV0.png" border="0" /><br>
+漏洞修复：<br>
+在每次写入config.php文件的时候，在他目录下创建.htaccess文件禁止解析php文件<br>
+<img src="https://s1.ax1x.com/2020/04/02/GJOlqI.png" alt="GJOlqI.png" border="0" />
+</div>]]></content>
+      <tags>
+        <tag>代码审计</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>闪灵cms重装漏洞复现</title>
+    <url>/blog/2020/03/27/one/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+
+<p>Cms重装漏洞简介：
+一般cms都有一个install的文件用于安装cms的包括数据库信息，网站信息等但是如果没有对install这个文件做安全的校验就会出现，重装漏洞，即覆盖掉原网站。这里用闪灵cms做简单说明</p>
+<div>
+    首先，定位到install文件的位置</br>
+<a href="https://sm.ms/image/NCIGpugAaect7nO" target="_blank"><img src="https://i.loli.net/2020/03/27/NCIGpugAaect7nO.png" /></a>
+   <p> 简单解释下，第1-15行的意思，就是get接受两个参数。如果action参数的值为savepath就会返回一个后台信息和账号密码的文本，并且停止到脚本</br>
+向下走16行-20行就是 分割路径然后请求/data/config.json文件并且返回其中的id值，然后在去请求官网的api接口
+    </p>
+    继续向下走：</br>
+<a href="https://sm.ms/image/w8OT9M4ubE6KSR5" target="_blank"><img src="https://i.loli.net/2020/03/27/w8OT9M4ubE6KSR5.png" /></a></br>
+    判断step的值 如果不是4 并且step为，就会跳转回首页</br>
+
+<p><a href="https://sm.ms/image/fA3p4r9QZlkuOG7" target="_blank"><img src="https://i.loli.net/2020/03/27/fA3p4r9QZlkuOG7.png" /></a><br>    判断step的值 如果为1或者空则进入到安装页面。<br></br><br><a href="https://sm.ms/image/m1dynSiusqpIzJV" target="_blank"><img src="https://i.loli.net/2020/03/27/m1dynSiusqpIzJV.png" /></a><br>也是判断step的值为2时候进入此页面，（3 和 4 步骤同，就不贴了）</br></p>
+<p>
+至此，我们可以看到他的整体一个流程，首先get类型接收step和action的值
+如果action=savepath 就会停止脚本的运行，如果step为空 或者0 就会跳转回首页
+所以我们可以直接step=1 action=null，直接绕过限制 ，从而造成重装漏洞 
+</p>
+
+
+<p><a href="https://sm.ms/image/zsv2mliyXNaIBJp" target="_blank"><img src="https://i.loli.net/2020/03/27/zsv2mliyXNaIBJp.png" /></a></p>
+</div>
+
+
+]]></content>
+      <tags>
+        <tag>代码审计</tag>
+      </tags>
+  </entry>
 </search>
