@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>DM-cms后台getshell</title>
-    <url>/blog/2020/04/28/four/</url>
+    <url>/2020/04/28/four/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>  
 
 
@@ -15,7 +15,7 @@
   </entry>
   <entry>
     <title>thinkphp6任意文件写入</title>
-    <url>/blog/2020/04/03/three/</url>
+    <url>/2020/04/03/three/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
 Thinkphp6:任意文件写入<br>
 版本：v6.0.0-v6.0.1<br>
@@ -49,7 +49,7 @@ tp6/vendor/topthink/framework/src/think/session/Store.php<br>
   </entry>
   <entry>
     <title>phpyun 后台getshell</title>
-    <url>/blog/2020/04/02/two/</url>
+    <url>/2020/04/02/two/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
 <p>
 漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>
@@ -102,7 +102,7 @@ Url：访问（这里搭建的时候环境，我默认指向了uploads）<br>
   </entry>
   <entry>
     <title>闪灵cms重装漏洞复现</title>
-    <url>/blog/2020/03/27/one/</url>
+    <url>/2020/03/27/one/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
 
 <p>Cms重装漏洞简介：
