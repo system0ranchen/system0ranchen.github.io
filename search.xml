@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>实战记录</title>
+    <url>/2020/07/19/five/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe> 
+
+<p>目标是我的学校一个教务系统。<br><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710205835-10a6ad6c-c2ad-1.png" alt="图片.png"><br>青果的，网上找了找了漏洞，无果。在前期，信息搜集的时候发现开放了8000端口访问看看</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210120-7346270e-c2ad-1.png" alt="图片.png"></p>
+<p>这熟悉的报错界面 ，该死的甜美，本着某蟑螂(小强)的精神，我fuzz了目录，发现存在一个doc目录</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210253-aa6f084a-c2ad-1.png" alt="图片.png"><br>没有验证码，仿佛就是告诉你快来淦(爆破)我啊一样<br>掏出burp，爆破，运气还不错。一发入魂（跑出来admin账户）</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210450-f0028c92-c2ad-1.png" alt="图片.png"><br>但是 进来后发现，这xx管理员的功能少的可怜，连个上传点都没有，注入点也没有<br>后来想了想，既然是教学系统那教师肯定有上传点，因为需要判卷，上传课题，汇报工作等等啥的</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210742-56f5fa2e-c2ae-1.png" alt="图片.png"><br>有教师用户随便登录一个<br>结果就是不出所料的确实有上传点</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210823-6f5f6c6c-c2ae-1.png" alt="图片.png"><br>在模板管理处有上传点</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211111-d3a55498-c2ae-1.png" alt="图片.png"><br>上传测试的时候发现是白名单，但是他除了文件名的时候并不会改名字，最后配合iis6解析漏洞拿下此系统</p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211318-1eea3324-c2af-1.png" alt="图片.png"></p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211427-483e7db6-c2af-1.png" alt="图片.png"><br>文末（一路上几乎没有什么技术上的坑算是一篇水文，shell已删除）</p>
+]]></content>
+      <tags>
+        <tag>渗透测试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>DM-cms后台getshell</title>
     <url>/2020/04/28/four/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>  
