@@ -63,7 +63,7 @@ win server2008+php+sqliab+d_safe_2.1.5.4</code></pre><p><img src="https://i.loli
 <p><img src="https://i.loli.net/2020/07/22/PgMTK4WFkmRawjQ.png" alt="图片.png"></p>
 <p>所以我们可以针对他盲注和报错注入写tamper ，因为这样比较简单</p>
 <p>成品</p>
-<pre><code>![图片.png](https://xzfile.aliyuncs.com/media/upload/picture/20200819155846-cf26f36a-e1f1-1.png)</code></pre><p>看效果</p>
+<pre><code>马赛克</code></pre><p>看效果</p>
 <p><img src="https://i.loli.net/2020/07/22/9oK2FODV5Xxr8Nn.png" alt="图片.png"></p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><pre><code>waf 绕过，的方式主要还是根据不同waf 拦截的特性来的，根据不同的数据库特性，不同的系统，不同的中间件都有不同的绕过方式这里只是一个抛砖引玉的作用希望师傅们。d盾和云锁没有上tamper是因为，全发出来就没意思了，绕过方式已经给出来，编写就交给师傅们了。</code></pre>]]></content>
       <tags>
