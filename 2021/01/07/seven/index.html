@@ -20,17 +20,30 @@
     var CONFIG = {"hostname":"system0ranchen.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一个普通且无名的信息安全爱好者">
-<meta property="og:type" content="website">
-<meta property="og:title" content="system0ranchen">
-<meta property="og:url" content="https://system0ranchen.github.io/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/index.html">
+  <meta name="description" content="记录学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content=" PbootCMS—前台首页注入">
+<meta property="og:url" content="https://system0ranchen.github.io/2021/01/07/seven/index.html">
 <meta property="og:site_name" content="system0ranchen">
-<meta property="og:description" content="一个普通且无名的信息安全爱好者">
+<meta property="og:description" content="记录学习">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bbd83ffa7d37b3258e87.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bc113ffa7d37b325cd03.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bca03ffa7d37b3267476.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bd5f3ffa7d37b3274646.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bdc43ffa7d37b327b973.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6be8b3ffa7d37b328a129.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bed33ffa7d37b328fdb6.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6befa3ffa7d37b3292a73.jpg">
+<meta property="og:image" content="https://pic.downk.cc/item/5ff6bf8c3ffa7d37b329dc78.jpg">
+<meta property="article:published_time" content="2021-01-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-07T08:02:29.151Z">
 <meta property="article:author" content="染尘">
+<meta property="article:tag" content="代码审计">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.downk.cc/item/5ff6bbd83ffa7d37b3258e87.jpg">
 
-<link rel="canonical" href="https://system0ranchen.github.io/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">
+<link rel="canonical" href="https://system0ranchen.github.io/2021/01/07/seven/">
 
 
 <script id="page-configurations">
@@ -38,12 +51,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: 代码审计 | system0ranchen</title>
+  <title> PbootCMS—前台首页注入 | system0ranchen</title>
   
 
 
@@ -171,116 +184,114 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">代码审计
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://system0ranchen.github.io/2021/01/07/seven/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s1.ax1x.com/2020/03/27/GCO4Rx.th.jpg">
+      <meta itemprop="name" content="染尘">
+      <meta itemprop="description" content="一个普通且无名的信息安全爱好者">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="system0ranchen">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+           PbootCMS—前台首页注入
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-07 00:00:00 / 修改时间：16:02:29" itemprop="dateCreated datePublished" datetime="2021-01-07T00:00:00+08:00">2021-01-07</time>
+            </span>
+
+          
+            <div class="post-description">记录学习</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>个人学习记录</code></pre><h4 id="漏洞演示"><a href="#漏洞演示" class="headerlink" title="漏洞演示"></a>漏洞演示</h4><p>搭建好环境后，访问首页</p>
+<p><img src="https://pic.downk.cc/item/5ff6bbd83ffa7d37b3258e87.jpg" alt=""></p>
+<p>poc：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?ext_price%0a)%0aand%0a(updatexml(1,concat(0x3a,&quot;---&quot;,(select%0auser())),1))%23%27</span><br></pre></td></tr></table></figure>
+
+<p>直接访问</p>
+<p><img src="https://pic.downk.cc/item/5ff6bc113ffa7d37b325cd03.jpg" alt=""></p>
+<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>漏洞入口文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apps&#x2F;home&#x2F;controller&#x2F;IndexController.php</span><br></pre></td></tr></table></figure>
+
+<p>关键代码在    parserAfter方法内，跟踪进去</p>
+<p><img src="https://pic.downk.cc/item/5ff6bca03ffa7d37b3267476.jpg" alt=""></p>
+<p>进入之后可以看到</p>
+<p>$content = $this-&gt;parserSpecifyListLabel($content);方法</p>
+<p><img src="https://pic.downk.cc/item/5ff6bd5f3ffa7d37b3274646.jpg" alt=""></p>
+<p>进入此方法</p>
+<p>在1115-1118行可以看到，这里接收了GET类型内容，只要前缀是ext_，就会把key值赋值给$where2</p>
+<p>(小注释：get() 是此框架自定义的接受GET类型参数的函数，且有过滤，但是只会过滤数组的value，并不会过滤key)</p>
+<p><img src="https://pic.downk.cc/item/5ff6bdc43ffa7d37b327b973.jpg" alt=""></p>
+<p>之后，我们向下走，</p>
+<p>在1170行，进入到另一个关键方法 getSpecifyList</p>
+<p>跟踪进入</p>
+<p><img src="https://pic.downk.cc/item/5ff6be8b3ffa7d37b328a129.jpg" alt=""></p>
+<p><img src="https://pic.downk.cc/item/5ff6bed33ffa7d37b328fdb6.jpg" alt=""></p>
+<p>关键代码在 第381行，$where 即我们可以控制的内容。可以看到直接带入到了where方法根据where方法</p>
+<p><img src="https://pic.downk.cc/item/5ff6befa3ffa7d37b3292a73.jpg" alt=""></p>
+<p>可以看到直接拼接了sql语句并没有过滤</p>
+<p><img src="https://pic.downk.cc/item/5ff6bf8c3ffa7d37b329dc78.jpg" alt=""></p>
+<h4 id="完"><a href="#完" class="headerlink" title="完"></a>完</h4>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-01-07T00:00:00+08:00"
-              content="2021-01-07">
-          01-07
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag"># 代码审计</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/07/seven/" itemprop="url">
-            <span itemprop="name"> PbootCMS—前台首页注入</span>
-          </a>
-      </div>
+        
 
-    </header>
-  </article>
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/25/six/" rel="prev" title="如何编写自己的绕waf-tamper脚本">
+      <i class="fa fa-chevron-left"></i> 如何编写自己的绕waf-tamper脚本
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-03T18:55:00+08:00"
-              content="2020-04-03">
-          04-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/03/three/" itemprop="url">
-            <span itemprop="name">thinkphp6任意文件写入</span>
-          </a>
-      </div>
-
-    </header>
+      </footer>
+    
   </article>
+  
+  
+  
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-02T16:57:11+08:00"
-              content="2020-04-02">
-          04-02
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/02/two/" itemprop="url">
-            <span itemprop="name">phpyun 后台getshell</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-27T12:21:37+08:00"
-              content="2020-03-27">
-          03-27
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/03/27/one/" itemprop="url">
-            <span itemprop="name">闪灵cms重装漏洞复现</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-    </div>
   </div>
-  
-  
-  
-
-  
-
 
 
           </div>
@@ -331,6 +342,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞演示"><span class="nav-number">2.</span> <span class="nav-text">漏洞演示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#原理分析"><span class="nav-number">3.</span> <span class="nav-text">原理分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#完"><span class="nav-number">4.</span> <span class="nav-text">完</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

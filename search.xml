@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title> PbootCMS—前台首页注入</title>
+    <url>/2021/01/07/seven/</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
+
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>个人学习记录</code></pre><h4 id="漏洞演示"><a href="#漏洞演示" class="headerlink" title="漏洞演示"></a>漏洞演示</h4><p>搭建好环境后，访问首页</p>
+<p><img src="https://pic.downk.cc/item/5ff6bbd83ffa7d37b3258e87.jpg" alt=""></p>
+<p>poc：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?ext_price%0a)%0aand%0a(updatexml(1,concat(0x3a,&quot;---&quot;,(select%0auser())),1))%23%27</span><br></pre></td></tr></table></figure>
+
+<p>直接访问</p>
+<p><img src="https://pic.downk.cc/item/5ff6bc113ffa7d37b325cd03.jpg" alt=""></p>
+<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>漏洞入口文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apps&#x2F;home&#x2F;controller&#x2F;IndexController.php</span><br></pre></td></tr></table></figure>
+
+<p>关键代码在    parserAfter方法内，跟踪进去</p>
+<p><img src="https://pic.downk.cc/item/5ff6bca03ffa7d37b3267476.jpg" alt=""></p>
+<p>进入之后可以看到</p>
+<p>$content = $this-&gt;parserSpecifyListLabel($content);方法</p>
+<p><img src="https://pic.downk.cc/item/5ff6bd5f3ffa7d37b3274646.jpg" alt=""></p>
+<p>进入此方法</p>
+<p>在1115-1118行可以看到，这里接收了GET类型内容，只要前缀是ext_，就会把key值赋值给$where2</p>
+<p>(小注释：get() 是此框架自定义的接受GET类型参数的函数，且有过滤，但是只会过滤数组的value，并不会过滤key)</p>
+<p><img src="https://pic.downk.cc/item/5ff6bdc43ffa7d37b327b973.jpg" alt=""></p>
+<p>之后，我们向下走，</p>
+<p>在1170行，进入到另一个关键方法 getSpecifyList</p>
+<p>跟踪进入</p>
+<p><img src="https://pic.downk.cc/item/5ff6be8b3ffa7d37b328a129.jpg" alt=""></p>
+<p><img src="https://pic.downk.cc/item/5ff6bed33ffa7d37b328fdb6.jpg" alt=""></p>
+<p>关键代码在 第381行，$where 即我们可以控制的内容。可以看到直接带入到了where方法根据where方法</p>
+<p><img src="https://pic.downk.cc/item/5ff6befa3ffa7d37b3292a73.jpg" alt=""></p>
+<p>可以看到直接拼接了sql语句并没有过滤</p>
+<p><img src="https://pic.downk.cc/item/5ff6bf8c3ffa7d37b329dc78.jpg" alt=""></p>
+<h4 id="完"><a href="#完" class="headerlink" title="完"></a>完</h4>]]></content>
+      <tags>
+        <tag>代码审计</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何编写自己的绕waf-tamper脚本</title>
     <url>/2020/08/25/six/</url>
     <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
